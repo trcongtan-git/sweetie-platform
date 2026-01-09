@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import AntdProvider from "@/providers/antd";
 import ToastProvider from "@/providers/toast";
@@ -46,6 +48,8 @@ export default function RootLayout({
             </AntdProvider>
           </ReactQueryProvider>
         </LoadingScreen>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
