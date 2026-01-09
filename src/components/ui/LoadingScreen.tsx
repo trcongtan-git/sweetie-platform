@@ -142,7 +142,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ children }) => {
                 fontWeight: 500,
               }}
             >
-              Đang tải...
+              Loading...
             </div>
           </div>
         </div>
