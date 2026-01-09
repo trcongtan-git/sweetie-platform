@@ -1,0 +1,237 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import "tailwindcss";
+@import '../styles/table.css';
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter), "Inter", sans-serif;
+  --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+}
+
+/* Force light theme - ignore browser preference */
+:root,
+html,
+body {
+  color-scheme: light;
+  background: #ffffff;
+  color: #171717;
+  font-family: var(--font-inter), "Inter", sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), "Inter", sans-serif;
+}
+
+/* Placeholder styling for form inputs */
+::placeholder {
+  color: #9ca3af !important;
+  opacity: 1;
+}
+
+::-webkit-input-placeholder {
+  color: #9ca3af !important;
+}
+
+::-moz-placeholder {
+  color: #9ca3af !important;
+  opacity: 1;
+}
+
+:-ms-input-placeholder {
+  color: #9ca3af !important;
+}
+
+/* Animation for drawer slide in from right */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Smooth transitions for layout changes */
+.drawer-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar for drawer content */
+.drawer-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.drawer-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.drawer-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.drawer-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Force LTR for all textareas in result column */
+.tanstack-table td textarea,
+.tanstack-table td textarea:focus,
+.tanstack-table td textarea:active,
+.tanstack-table td .ant-input,
+.tanstack-table td .ant-input:focus,
+.tanstack-table td .ant-input:active {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: normal !important;
+  writing-mode: horizontal-tb !important;
+  font-variant-east-asian: normal !important;
+  text-orientation: mixed !important;
+}
+
+/* Force LTR for Ant Design TextArea wrapper */
+.tanstack-table td .ant-input-textarea,
+.tanstack-table td .ant-input-textarea textarea,
+.tanstack-table td .ant-input-textarea textarea:focus,
+.tanstack-table td .ant-input-textarea textarea:active {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: normal !important;
+  writing-mode: horizontal-tb !important;
+  font-variant-east-asian: normal !important;
+  text-orientation: mixed !important;
+}
+
+/* Animation for folder column collapse/expand */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+/* Folder column transition */
+.folder-column-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Collapsed folder column styles */
+.folder-column-collapsed {
+  min-width: 60px;
+  max-width: 60px;
+}
+
+/* Toggle button hover effect */
+.folder-toggle-btn:hover {
+  background-color: #f5f5f5 !important;
+  border-radius: 6px;
+}
+
+/* Selected testcase row highlight */
+.selected-testcase-row {
+  background-color: #e6f7ff !important;
+}
+
+.selected-testcase-row:hover {
+  background-color: #e6f7ff !important;
+}
+
+/* Dynamic table layout - responsive to container width */
+.kf-tbl-hover { width: 100%; }
+.kf-tbl-hover .row { display: flex; width: 100%; }
+.kf-tbl-hover .cell { overflow: hidden; }
+
+/* Remove global overrides that force first columns to 70/15/15 (causing wide ID) */
+.kf-tbl-hover .row > div,
+.kf-tbl-header > div {
+  /* let inline styles from DataTable control sizes */
+  flex: initial;
+  width: auto;
+  max-width: none;
+}
+
+
+/* Action buttons based on drawer state */
+.action-button-desktop {
+  display: flex !important;
+}
+
+.action-button-mobile {
+  display: none !important;
+}
+
+/* Show mobile dropdown when drawer is open */
+.drawer-open .action-button-desktop {
+  display: none !important;
+}
+
+.drawer-open .action-button-mobile {
+  display: flex !important;
+}
+
+/* Fix progress bar text alignment */
+.ant-progress-text {
+  transform: translateY(1px) !important;
+}
+
+/* Override Ant Design Dragger background for template config upload */
+.custom-upload-dragger.ant-upload-drag,
+.custom-upload-dragger.ant-upload.ant-upload-drag,
+[class*="ant-upload-drag"].custom-upload-dragger,
+[class*="css-dev-only-do-not-override"].custom-upload-dragger.ant-upload-drag,
+[class*="css-dev-only-do-not-override"].custom-upload-dragger.ant-upload.ant-upload-drag,
+.ant-upload.custom-upload-dragger.ant-upload-drag,
+.ant-upload-drag.custom-upload-dragger {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.custom-upload-dragger.ant-upload-drag:hover,
+.custom-upload-dragger.ant-upload.ant-upload-drag:hover,
+[class*="ant-upload-drag"].custom-upload-dragger:hover,
+[class*="css-dev-only-do-not-override"].custom-upload-dragger.ant-upload-drag:hover,
+[class*="css-dev-only-do-not-override"].custom-upload-dragger.ant-upload.ant-upload-drag:hover,
+.ant-upload.custom-upload-dragger.ant-upload-drag:hover,
+.ant-upload-drag.custom-upload-dragger:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: #155eef !important;
+  border-style: dashed !important;
+}

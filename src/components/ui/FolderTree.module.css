@@ -1,0 +1,73 @@
+/* Simple Folder Tree Styles */
+.folder-tree {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  min-width: max-content;
+}
+
+/* Force no text wrapping and allow expansion */
+.folder-tree .ant-tree-treenode {
+  white-space: nowrap !important;
+  min-width: max-content !important;
+  width: max-content !important;
+}
+
+.folder-tree .ant-tree-node-content-wrapper {
+  white-space: nowrap !important;
+  min-width: max-content !important;
+  width: max-content !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.folder-tree .ant-tree-title {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  word-break: keep-all !important;
+  min-width: max-content !important;
+  width: max-content !important;
+  flex-shrink: 0 !important;
+}
+
+/* Ensure tree list can expand */
+.folder-tree .ant-tree-list {
+  min-width: max-content !important;
+  width: max-content !important;
+}
+
+.folder-tree .ant-tree-list-holder {
+  min-width: max-content !important;
+  width: max-content !important;
+}
+
+.folder-tree .ant-tree-list-holder-inner {
+  min-width: max-content !important;
+  width: max-content !important;
+}
+
+/* Custom scrollbar */
+.folder-tree::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.folder-tree::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.folder-tree::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.folder-tree::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Hover effect for header buttons */
+.header-button:hover {
+  border-color: #155eef !important;
+  color: #155eef !important;
+}

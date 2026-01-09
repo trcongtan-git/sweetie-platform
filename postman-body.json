@@ -1,0 +1,23 @@
+import { OpenRouter } from "@openrouter/sdk";
+
+const openrouter = new OpenRouter({
+  apiKey: "Bearer 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"
+});
+
+const stream = await openrouter.chat.send({
+  model: "mistralai/devstral-2512:free",
+  messages: [
+    {
+      "role": "user",
+      "content": "Hãy tạo ra văn bản đánh giá học viên từ 50-100 từ dựa trên các tiêu chí sau:\n\n- Tiếp thu tốt\n- Nói chuyện nhiều\n- Thỉnh thoảng mất tập trung\n- Năng động\n\nYÊU CẦU:\n1. Chỉ output nội dung đánh giá, không thêm text khác\n2. Bắt đầu bằng \"Học viên (HV)...\"\n3. Viết thành một đoạn văn liền mạch, không xuống dòng\n4. Cuối cùng thêm phần \"Khuyến khích...\" để học viên cải thiện\n5. Chỉ đưa khuyến khích, không thêm \"nếu giữ vững...\"\n6. Văn phong tự nhiên như giáo viên tiếng Anh có nhiều năm kinh nghiệm\n7. Không tạo cảm giác AI hóa\n8. Dùng từ ngữ tự nhiên, bình dị, không quá cao siêu\n9. TUYỆT ĐỐI không sử dụng các từ thân mật như \"nhé\", \"nhỉ\", \"đấy\", \"vậy\", \"nhá\", \"đó\" trong câu\n\nVÍ DỤ THAM KHẢO:\n\nHọc viên (HV) ngoan, có thái độ học tập tích cực và chủ động tham gia các hoạt động trên lớp. Em có sự tiến bộ rõ rệt, ghi nhớ từ vựng và kỹ năng viết khá tốt. Khuyến khích tiếp tục duy trì tinh thần học tập, ôn từ đều đặn và luyện nói sau mỗi buổi học để nâng cao hiệu quả ghi nhớ.\n\nHọc viên (HV) chăm ngoan, tích cực trong học tập và phối hợp tốt với lớp. Khả năng ghi nhớ và sử dụng từ vựng khá tốt, phát âm rõ và diễn đạt lưu loát. Vận dụng linh hoạt các cấu trúc đã học. Khuyến khích tiếp tục phát huy để nâng cao kỹ năng giao tiếp.\n\nHọc viên (HV) học tập tích cực, nghiêm túc và hòa đồng với bạn bè. Em có tiến bộ trong việc ghi nhớ từ và đúng chính tả. Tuy nhiên cần tự tin hơn khi nói và chú ý áp dụng mẫu câu. Khuyến khích HV tiếp tục duy trì tinh thần chăm chỉ, luyện nói thường xuyên và làm bài cẩn thận hơn."
+    }
+  ],
+  stream: true
+});
+
+for await (const chunk of stream) {
+  const content = chunk.choices[0]?.delta?.content;
+  if (content) {
+    process.stdout.write(content);
+  }
+}

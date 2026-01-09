@@ -1,0 +1,236 @@
+/* Full-height table helpers */
+.kf-table-fullheight,
+.kf-table-fullheight .ant-table-wrapper,
+.kf-table-fullheight .ant-table,
+.kf-table-fullheight .ant-table-container {
+  height: 100% !important;
+}
+
+.kf-table-fullheight .ant-table-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.kf-table-fullheight .ant-spin-nested-loading,
+.kf-table-fullheight .ant-spin-container {
+  height: 100% !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.kf-table-fullheight .ant-table-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* For scrollable body */
+.kf-table-fullheight .ant-table-container .ant-table-body,
+.kf-table-fullheight .ant-table-body {
+  flex: 1;
+  height: 100% !important;
+  max-height: 100% !important;
+}
+
+/* Hide sticky scrollbar gutter at bottom when using vertical scroll */
+.kf-table-fullheight .ant-table-sticky-scroll-bar {
+  display: none !important;
+}
+
+/* Custom DataTable Styles */
+.kf-tbl-hover .row:hover { 
+  background: #f9fafb; 
+}
+
+.kf-tbl-hover .cell.hover-col { 
+  background: #f9fafb; 
+}
+
+/* DataTable Header */
+.kf-tbl-header {
+  display: flex;
+  background: #f9fafb;
+  border: 1px solid #eaecf0;
+  border-bottom: 1px solid #eaecf0;
+  border-radius: 8px 8px 0 0;
+  box-sizing: border-box;
+}
+
+.kf-tbl-header > div {
+  flex: 0 0 auto;
+  padding: 10px 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+
+/* DataTable Body */
+.kf-tbl-hover {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.kf-tbl-hover .row {
+  display: flex;
+  border-bottom: 1px solid #eaecf0;
+}
+
+.kf-tbl-hover .row:hover {
+  background: #f9fafb;
+}
+
+.kf-tbl-hover .cell {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+
+/* Users table specific styles */
+.users-table .kf-tbl-header > div:nth-child(1),
+.users-table .kf-tbl-hover .row > .cell:nth-child(1) {
+  flex: 0 0 64px !important;
+  width: 64px !important;
+  max-width: 64px !important;
+  min-width: 64px !important;
+  text-align: center !important;
+}
+
+/* Responsive table */
+@media (max-width: 768px) {
+  .kf-tbl-header,
+  .kf-tbl-hover .row {
+    flex-wrap: wrap;
+  }
+  
+  .kf-tbl-header > div,
+  .kf-tbl-hover .cell {
+    min-width: 120px;
+  }
+}
+
+/* Loading state */
+.kf-tbl-hover .row.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Empty state */
+.kf-tbl-hover .empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* Pagination styles */
+.kf-table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding: 0 4px;
+}
+
+.kf-table-pagination .ant-pagination {
+  margin: 0;
+}
+
+.kf-table-pagination .ant-pagination-total-text {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+/* Action buttons */
+.kf-tbl-hover .cell .ant-btn {
+  margin-right: 4px;
+}
+
+.kf-tbl-hover .cell .ant-btn:last-child {
+  margin-right: 0;
+}
+
+/* Status badges */
+.kf-tbl-hover .cell .ant-badge {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Text alignment */
+.kf-tbl-hover .cell.text-center {
+  text-align: center;
+}
+
+.kf-tbl-hover .cell.text-right {
+  text-align: right;
+}
+
+.kf-tbl-hover .cell.text-left {
+  text-align: left;
+}
+
+/* Freeze header for Ant Design Table */
+.base-table .ant-table-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.base-table .ant-table-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.base-table .ant-table-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #fff;
+}
+
+.base-table .ant-table-thead > tr > th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #f9fafb !important;
+}
+
+/* Ensure sticky header works with fixed columns */
+.base-table .ant-table-thead > tr > th.ant-table-cell-fix-right,
+.base-table .ant-table-thead > tr > th.ant-table-cell-fix-left {
+  z-index: 21 !important;
+}
+
+/* Ensure sticky header works with scroll */
+.base-table .ant-table-body {
+  flex: 1;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+}
+
+/* Freeze header for DataTable (TanStack Table) */
+.tanstack-table-header-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.tanstack-table-header-sticky th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #f9fafb;
+}
+
+/* Ensure pinned columns header stays on top - moved to DataTable.tsx inline styles */
