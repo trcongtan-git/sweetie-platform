@@ -840,7 +840,7 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 16 }}>
           <Space size="large" wrap>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <label style={{ fontSize: 14, fontWeight: 500 }}>Exam</label>
+              <label style={{ fontSize: 14, fontWeight: 500, color: !data.exam ? "#ef4444" : "inherit" }}>Exam</label>
               <Select
                 value={data.exam}
                 onChange={updateExam}
@@ -854,7 +854,7 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
               />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <label style={{ fontSize: 14, fontWeight: 500 }}>Date</label>
+              <label style={{ fontSize: 14, fontWeight: 500, color: !data.date ? "#ef4444" : "inherit" }}>Date</label>
               <DatePicker
                 value={data.date}
                 onChange={updateDate}
@@ -869,7 +869,7 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
               />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <label style={{ fontSize: 14, fontWeight: 500 }}>Class</label>
+              <label style={{ fontSize: 14, fontWeight: 500, color: !data.class || data.class.trim() === "" ? "#ef4444" : "inherit" }}>Class</label>
               <Input
                 value={data.class}
                 onChange={(e) => updateClass(e.target.value)}
@@ -879,7 +879,7 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
               />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <label style={{ fontSize: 14, fontWeight: 500 }}>Teacher</label>
+              <label style={{ fontSize: 14, fontWeight: 500, color: !data.teacher || data.teacher.trim() === "" ? "#ef4444" : "inherit" }}>Teacher</label>
               <Input
                 value={data.teacher}
                 onChange={(e) => updateTeacher(e.target.value)}
