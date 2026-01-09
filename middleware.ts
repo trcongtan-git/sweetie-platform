@@ -14,14 +14,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const authHeader = request.headers.get("authorization") || request.headers.get("Authorization");
+  // Get authorization header (case-insensitive)
+  const authHeader = 
+    request.headers.get("authorization") || 
+    request.headers.get("Authorization") ||
+    request.headers.get("AUTHORIZATION");
 
   if (!authHeader || !authHeader.startsWith("Basic ")) {
-    return new NextResponse("Authentication required", {
+    return new NextResponse(null, {
       status: 401,
       headers: {
         "WWW-Authenticate": 'Basic realm="Secure Area"',
-        "Content-Type": "text/plain",
       },
     });
   }
@@ -38,11 +41,10 @@ export function middleware(request: NextRequest) {
     // Invalid base64 encoding
   }
 
-  return new NextResponse("Invalid credentials", {
+  return new NextResponse(null, {
     status: 401,
     headers: {
       "WWW-Authenticate": 'Basic realm="Secure Area"',
-      "Content-Type": "text/plain",
     },
   });
 }
