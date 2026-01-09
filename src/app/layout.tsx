@@ -9,6 +9,7 @@ import { ToastContainer } from "@/components/ui/Toast";
 import { LayoutOptionsProvider } from "@/providers/layoutOptions";
 import ReactQueryProvider from "@/providers/react-query";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import { AuthCheck } from "./auth-check";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -36,6 +37,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#ffffff" />
       </head>
       <body className={`${inter.variable} antialiased`}>
+        <AuthCheck />
         <LoadingScreen>
           <ReactQueryProvider>
             <AntdProvider>
