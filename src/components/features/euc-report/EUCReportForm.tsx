@@ -27,8 +27,9 @@ const EditableInputCell: React.FC<{
   type?: "text" | "number";
   min?: number;
   max?: number;
+  step?: string | number;
   validate?: (value: string) => boolean;
-}> = ({ initialValue, onValueChange, onBlur, type = "text", min, max, validate }) => {
+}> = ({ initialValue, onValueChange, onBlur, type = "text", min, max, step, validate }) => {
   const [localValue, setLocalValue] = useState(initialValue);
   const isInitialMount = useRef(true);
 
@@ -64,6 +65,7 @@ const EditableInputCell: React.FC<{
       type={type}
       min={min}
       max={max}
+      step={step}
     />
   );
 };
@@ -145,10 +147,16 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
         return student.fullName || "";
       case "nickName":
         return student.nickName || "";
-      case "readingWriting":
-        return student.readingWriting || "";
+      case "vocabulary":
+        return student.vocabulary || "";
+      case "grammar":
+        return student.grammar || "";
       case "listening":
         return student.listening || "";
+      case "reading":
+        return student.reading || "";
+      case "writing":
+        return student.writing || "";
       case "speaking":
         return student.speaking || "";
       case "result":
@@ -290,62 +298,8 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
         },
       },
       {
-        id: "readingWriting",
-        header: "Reading & Writing (40)",
-        size: 70,
-        cell: ({ row }) => {
-          const isEditing =
-            editingCell?.rowId === row.original.id &&
-            editingCell?.columnId === "readingWriting";
-          const cellKey = `${row.original.id}-readingWriting`;
-          return isEditing ? (
-            <EditableInputCell
-              key={cellKey}
-              initialValue={row.original.readingWriting}
-              type="number"
-              min={0}
-              max={40}
-              validate={(value) => {
-                if (value === "") return true;
-                if (!/^\d+$/.test(value)) return false;
-                const num = parseInt(value, 10);
-                return num >= 0 && num <= 40;
-              }}
-              onValueChange={(value) => setEditingValue(row.original.id, "readingWriting", value)}
-              onBlur={(value) => {
-                updateStudent(row.original.id, { readingWriting: value });
-                saveCurrentData();
-                setEditingCell(null);
-                setEditingValues(prev => {
-                  const newValues = { ...prev };
-                  delete newValues[cellKey];
-                  return newValues;
-                });
-              }}
-            />
-          ) : (
-            <div
-              onClick={() => {
-                const value = getStudentValue(row.original, "readingWriting");
-                console.log("[DEBUG] Clicked readingWriting cell, setting value:", value);
-                setEditingValue(row.original.id, "readingWriting", value);
-                setEditingCell({
-                  rowId: row.original.id,
-                  columnId: "readingWriting",
-                });
-              }}
-              style={{ cursor: "text", minHeight: "24px", padding: "4px 0" }}
-            >
-              {row.original.readingWriting || (
-                <span style={{ color: "#ff4d4f" }}>Click to edit</span>
-              )}
-            </div>
-          );
-        },
-      },
-      {
         id: "listening",
-        header: "Listening (30)",
+        header: "Listening (25)",
         size: 70,
         cell: ({ row }) => {
           const isEditing =
@@ -358,12 +312,14 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
               initialValue={row.original.listening}
               type="number"
               min={0}
-              max={30}
+              max={25}
+              step="0.1"
               validate={(value) => {
-                if (value === "") return true;
-                if (!/^\d+$/.test(value)) return false;
-                const num = parseInt(value, 10);
-                return num >= 0 && num <= 30;
+                if (value === "" || value === ".") return true;
+                if (!/^\d*\.?\d*$/.test(value)) return false;
+                const num = parseFloat(value);
+                if (isNaN(num)) return value === "" || value === ".";
+                return num >= 0 && num <= 25;
               }}
               onValueChange={(value) => setEditingValue(row.original.id, "listening", value)}
               onBlur={(value) => {
@@ -395,8 +351,64 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
         },
       },
       {
+        id: "reading",
+        header: "Reading & Writing (50)",
+        size: 70,
+        cell: ({ row }) => {
+          const isEditing =
+            editingCell?.rowId === row.original.id &&
+            editingCell?.columnId === "reading";
+          const cellKey = `${row.original.id}-reading`;
+          return isEditing ? (
+            <EditableInputCell
+              key={cellKey}
+              initialValue={row.original.reading}
+              type="number"
+              min={0}
+              max={50}
+              step="0.1"
+              validate={(value) => {
+                if (value === "" || value === ".") return true;
+                if (!/^\d*\.?\d*$/.test(value)) return false;
+                const num = parseFloat(value);
+                if (isNaN(num)) return value === "" || value === ".";
+                return num >= 0 && num <= 50;
+              }}
+              onValueChange={(value) => setEditingValue(row.original.id, "reading", value)}
+              onBlur={(value) => {
+                updateStudent(row.original.id, { reading: value });
+                saveCurrentData();
+                setEditingCell(null);
+                setEditingValues(prev => {
+                  const newValues = { ...prev };
+                  delete newValues[cellKey];
+                  return newValues;
+                });
+              }}
+            />
+          ) : (
+            <div
+              onClick={() => {
+                const value = getStudentValue(row.original, "reading");
+                console.log("[DEBUG] Clicked reading cell, setting value:", value);
+                setEditingValue(row.original.id, "reading", value);
+                setEditingCell({
+                  rowId: row.original.id,
+                  columnId: "reading",
+                });
+              }}
+              style={{ cursor: "text", minHeight: "24px", padding: "4px 0" }}
+            >
+              {row.original.reading || (
+                <span style={{ color: "#ff4d4f" }}>Click to edit</span>
+              )}
+            </div>
+          );
+        },
+      },
+      {
         id: "speaking",
-        header: "Speaking (30)",
+        header: "Speaking (25)",
         size: 70,
         cell: ({ row }) => {
           const isEditing =
@@ -409,12 +421,14 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
               initialValue={row.original.speaking}
               type="number"
               min={0}
-              max={30}
+              max={25}
+              step="0.1"
               validate={(value) => {
-                if (value === "") return true;
-                if (!/^\d+$/.test(value)) return false;
-                const num = parseInt(value, 10);
-                return num >= 0 && num <= 30;
+                if (value === "" || value === ".") return true;
+                if (!/^\d*\.?\d*$/.test(value)) return false;
+                const num = parseFloat(value);
+                if (isNaN(num)) return value === "" || value === ".";
+                return num >= 0 && num <= 25;
               }}
               onValueChange={(value) => setEditingValue(row.original.id, "speaking", value)}
               onBlur={(value) => {
@@ -451,13 +465,13 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
         size: 40,
         meta: { align: "center" },
         cell: ({ row }) => {
-          const readingWriting = parseInt(row.original.readingWriting) || 0;
-          const listening = parseInt(row.original.listening) || 0;
-          const speaking = parseInt(row.original.speaking) || 0;
-          const total = readingWriting + listening + speaking;
+          const listening = parseFloat(row.original.listening) || 0;
+          const reading = parseFloat(row.original.reading) || 0;
+          const speaking = parseFloat(row.original.speaking) || 0;
+          const total = listening + reading + speaking;
           return (
             <div style={{ minHeight: "24px", padding: "4px 0" }}>
-              {total}
+              {total % 1 === 0 ? total : total.toFixed(1)}
             </div>
           );
         },
@@ -516,7 +530,7 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
       },
     ];
     },
-    [editingCell, data, updateStudent, deleteStudent, saveCurrentData, setEditingValue, getStudentValue]
+    [editingCell, data, updateStudent, saveCurrentData, setEditingValue, getStudentValue]
   );
 
   const checkApiKey = () => {
@@ -662,8 +676,11 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
               id: `${Date.now()}-${i}`,
               fullName,
               nickName,
-              readingWriting: "",
+              vocabulary: "",
+              grammar: "",
               listening: "",
+              reading: "",
+              writing: "",
               speaking: "",
               title: "",
               result: "",
@@ -754,9 +771,9 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
       "NO",
       "FULL NAME",
       "NICK NAME",
-      "READING & WRITING (40)",
-      "LISTENING (30)",
-      "SPEAKING (30)",
+      "LISTENING (25)",
+      "READING & WRITING (50)",
+      "SPEAKING (25)",
       "TOTAL",
       "RESULT",
     ];
@@ -783,17 +800,17 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
 
     data.students.forEach((student, index) => {
       const row = headerRow + 1 + index;
-      const readingWriting = parseInt(student.readingWriting) || 0;
-      const listening = parseInt(student.listening) || 0;
-      const speaking = parseInt(student.speaking) || 0;
-      const total = readingWriting + listening + speaking;
+      const listening = parseFloat(student.listening) || 0;
+      const reading = parseFloat(student.reading) || 0;
+      const speaking = parseFloat(student.speaking) || 0;
+      const total = listening + reading + speaking;
 
       const rowData = [
         index + 1,
         student.fullName,
         student.nickName,
-        student.readingWriting || "",
         student.listening || "",
+        student.reading || "",
         student.speaking || "",
         total,
         student.result || "",
@@ -814,7 +831,7 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
           bottom: { style: "thin" },
           right: { style: "thin" },
         };
-        if (colIndex === 0 || colIndex === 3 || colIndex === 4 || colIndex === 5 || colIndex === 6) {
+        if (colIndex === 0 || (colIndex >= 3 && colIndex <= 6)) {
           cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
         } else {
           cell.alignment = { vertical: "middle", wrapText: true };

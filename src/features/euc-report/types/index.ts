@@ -21,8 +21,11 @@ export interface Student {
   id: string;
   fullName: string;
   nickName: string;
-  readingWriting: string;
+  vocabulary: string;
+  grammar: string;
   listening: string;
+  reading: string;
+  writing: string;
   speaking: string;
   title: string;
   result: string;

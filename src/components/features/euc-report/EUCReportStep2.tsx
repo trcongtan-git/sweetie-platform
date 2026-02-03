@@ -41,11 +41,11 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
   }, [currentIndex, cardsPerPage, totalStudents]);
 
   const getStudentScore = (student: Student) => {
-    const readingWriting = parseInt(student.readingWriting) || 0;
-    const listening = parseInt(student.listening) || 0;
-    const speaking = parseInt(student.speaking) || 0;
-    const total = readingWriting + listening + speaking;
-    return { readingWriting, listening, speaking, total };
+    const listening = parseFloat(student.listening) || 0;
+    const readingWriting = parseFloat(student.reading) || 0;
+    const speaking = parseFloat(student.speaking) || 0;
+    const total = listening + readingWriting + speaking;
+    return { listening, readingWriting, speaking, total };
   };
 
   const StudentCard: React.FC<{ student: Student }> = ({ student }) => {
@@ -132,7 +132,7 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
                     fontWeight: 600,
                   }}
                 >
-                  LISTENING
+                  LISTENING (25)
                 </th>
                 <th
                   style={{
@@ -143,7 +143,7 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
                     fontWeight: 600,
                   }}
                 >
-                  READING & WRITING
+                  READING &amp; WRITING (50)
                 </th>
                 <th
                   style={{
@@ -154,7 +154,7 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
                     fontWeight: 600,
                   }}
                 >
-                  SPEAKING
+                  SPEAKING (25)
                 </th>
                 <th
                   style={{
@@ -189,7 +189,7 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
                     fontSize: "14px",
                   }}
                 >
-                  {student.readingWriting || "-"}
+                  {student.reading || "-"}
                 </td>
                 <td
                   style={{
@@ -210,7 +210,7 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
                     fontWeight: 600,
                   }}
                 >
-                  {scores.total}
+                  {scores.total % 1 === 0 ? scores.total : scores.total.toFixed(1)}
                 </td>
               </tr>
             </tbody>
@@ -1225,10 +1225,10 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
         };
 
         const getStudentData = (student: Student) => {
-          const readingWriting = parseInt(student.readingWriting) || 0;
-          const listening = parseInt(student.listening) || 0;
-          const speaking = parseInt(student.speaking) || 0;
-          const total = readingWriting + listening + speaking;
+          const listening = parseFloat(student.listening) || 0;
+          const readingWriting = parseFloat(student.reading) || 0;
+          const speaking = parseFloat(student.speaking) || 0;
+          const total = listening + readingWriting + speaking;
           const remarks = student.remarks || {};
           const academicAchievement = student.academicAchievement || {};
 
@@ -1239,8 +1239,12 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
             date: dateText,
             exam: examUpper,
             teacher: data.teacher,
+            // Keep old keys for template compatibility, but only use 3 bands
+            vocabulary: "",
+            grammar: "",
             listening: student.listening || "",
-            readingWriting: student.readingWriting || "",
+            reading: student.reading || "",
+            writing: "",
             speaking: student.speaking || "",
             totalScore: total,
             result: student.result || "",
@@ -1427,10 +1431,10 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
       });
 
       const dateText = data.date ? data.date.format("DD/MM/YYYY") : "";
-      const readingWriting = parseInt(student.readingWriting) || 0;
-      const listening = parseInt(student.listening) || 0;
-      const speaking = parseInt(student.speaking) || 0;
-      const total = readingWriting + listening + speaking;
+      const listening = parseFloat(student.listening) || 0;
+      const readingWriting = parseFloat(student.reading) || 0;
+      const speaking = parseFloat(student.speaking) || 0;
+      const total = listening + readingWriting + speaking;
 
       const remarks = student.remarks || {};
       const academicAchievement = student.academicAchievement || {};
@@ -1447,8 +1451,12 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
         date: dateText,
         exam: data.exam ? data.exam.toUpperCase() : "",
         teacher: data.teacher,
+        // Keep old keys for template compatibility, but only use 3 bands
+        vocabulary: "",
+        grammar: "",
         listening: student.listening || "",
-        readingWriting: student.readingWriting || "",
+        reading: student.reading || "",
+        writing: "",
         speaking: student.speaking || "",
         totalScore: total,
         result: student.result || "",
