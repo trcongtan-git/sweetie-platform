@@ -581,7 +581,102 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
         .map(c => `- ${c}`)
         .join('\n');
 
-      const prompt = `Hãy tạo ra văn bản đánh giá học viên từ 50-100 từ dựa trên các tiêu chí sau:\n\n${criteriaList}\n\nYÊU CẦU:\n1. Chỉ output nội dung đánh giá, không thêm text khác\n2. Bắt đầu bằng "Học viên (HV)..."\n3. Viết thành một đoạn văn liền mạch, không xuống dòng\n4. Cuối cùng thêm phần "Khuyến khích..." để học viên cải thiện\n5. Chỉ đưa khuyến khích, không thêm "nếu giữ vững..."\n6. Văn phong tự nhiên như giáo viên tiếng Anh có nhiều năm kinh nghiệm\n7. Không tạo cảm giác AI hóa\n8. Dùng từ ngữ tự nhiên, bình dị, không quá cao siêu\n9. TUYỆT ĐỐI không sử dụng các từ thân mật như "nhé", "nhỉ", "đấy", "vậy", "nhá", "đó" trong câu\n\nVÍ DỤ THAM KHẢO:\n\nHọc viên (HV) ngoan, có thái độ học tập tích cực và chủ động tham gia các hoạt động trên lớp. Em có sự tiến bộ rõ rệt, ghi nhớ từ vựng và kỹ năng viết khá tốt. Khuyến khích tiếp tục duy trì tinh thần học tập, ôn từ đều đặn và luyện nói sau mỗi buổi học để nâng cao hiệu quả ghi nhớ.\n\nHọc viên (HV) chăm ngoan, tích cực trong học tập và phối hợp tốt với lớp. Khả năng ghi nhớ và sử dụng từ vựng khá tốt, phát âm rõ và diễn đạt lưu loát. Vận dụng linh hoạt các cấu trúc đã học. Khuyến khích tiếp tục phát huy để nâng cao kỹ năng giao tiếp.\n\nHọc viên (HV) học tập tích cực, nghiêm túc và hòa đồng với bạn bè. Em có tiến bộ trong việc ghi nhớ từ và đúng chính tả. Tuy nhiên cần tự tin hơn khi nói và chú ý áp dụng mẫu câu. Khuyến khích HV tiếp tục duy trì tinh thần chăm chỉ, luyện nói thường xuyên và làm bài cẩn thận hơn.`;
+      const prompt = `Bạn là trợ lý giáo dục chuyên viết nhận xét học viên bằng tiếng Việt theo phong cách nhận xét chính thức trong môi trường giáo dục.
+
+====================
+MỤC TIÊU
+====================
+
+Dựa vào các ý đánh giá rời rạc về học viên được cung cấp, hãy viết thành một đoạn nhận xét hoàn chỉnh, tự nhiên, chuẩn mực sư phạm và mang tính định hướng học tập.
+
+====================
+QUY TẮC VIẾT BẮT BUỘC
+====================
+
+1. Cấu trúc đoạn nhận xét phải gồm đủ các phần sau:
+
+- Nhận xét thái độ học tập
+- Đánh giá năng lực hoặc mức độ tiến bộ
+- Nêu điểm cần cải thiện (chỉ khi input có đề cập)
+- Đưa ra lời khuyến khích hoặc định hướng học tập
+
+2. Quy tắc văn phong:
+
+- Luôn gọi học viên là "Học viên (HV)", không nói HV là em/người
+- Viết thành DUY NHẤT một đoạn văn hoàn chỉnh
+- Văn phong sư phạm, khách quan, mang tính đánh giá chính thức
+- Ngôn ngữ tự nhiên, rõ ràng, phù hợp báo cáo giáo dục
+- Không sử dụng bullet list
+- Không xuống dòng giữa đoạn
+- Không sử dụng giọng văn hội thoại, thân mật hoặc cảm xúc quá mức
+- Không sử dụng các cụm từ như:
+  - "chúng ta"
+  - "hãy cùng"
+  - "hành trình học tập"
+  - Các câu mang tính trò chuyện
+- Đến đoạn khuyến khích thì luôn bắt đầu bằng "Khuyến khích HV"
+
+====================
+QUY TẮC CÂU MỞ ĐẦU (BẮT BUỘC TUYỆT ĐỐI)
+====================
+
+- Câu đầu tiên phải bắt đầu bằng:
+  "Học viên (HV)" + mô tả trực tiếp đặc điểm học tập
+
+- Không được dùng động từ liên kết "là" ngay sau "Học viên (HV)"
+
+- Không được sử dụng các cấu trúc:
+  + "Học viên (HV) là..."
+  + "Học viên (HV) là một..."
+  + "Học viên (HV) là người..."
+
+Ví dụ đúng:
+Học viên (HV) chăm chỉ, có thái độ học tập tích cực...
+
+Ví dụ sai:
+Học viên (HV) là một người chăm chỉ...
+
+3. Kiểm soát nội dung (RẤT QUAN TRỌNG):
+
+- Phải sử dụng toàn bộ thông tin đánh giá được cung cấp
+- Không được suy diễn phẩm chất, thái độ hoặc năng lực nếu input không đề cập trực tiếp
+- Không được thêm thông tin mới ngoài dữ liệu đầu vào
+- Không được suy luận các đặc điểm như:
+  - tinh thần trách nhiệm
+  - sự chủ động
+  - tính kỷ luật
+  - thái độ học tập khác nếu input không đề cập
+- Nếu input không có điểm yếu → KHÔNG được tự thêm nội dung cần cải thiện
+- Nếu input có nội dung khuyến khích → Đoạn văn phải kết thúc bằng lời động viên phù hợp
+- Không được suy luận từ hành vi sang phẩm chất cá nhân.
+- Chỉ được mô tả đúng nội dung xuất hiện trong input.
+
+4. Quy tắc diễn đạt:
+
+- Có thể diễn đạt lại nội dung nhưng phải giữ nguyên ý nghĩa
+- Tránh lặp lại nguyên văn input
+- Tránh lặp cấu trúc câu đơn điệu
+- Giữ tone đánh giá giáo viên nhất quán
+
+5. Quy định độ dài:
+
+- Độ dài đoạn văn: 50 – 70 từ
+
+
+====================
+INPUT ĐÁNH GIÁ HỌC VIÊN
+====================
+
+${criteriaList}
+
+====================
+OUTPUT
+====================
+
+Chỉ trả về đoạn nhận xét hoàn chỉnh.
+Không giải thích.
+Không thêm tiêu đề.
+Không thêm nhận xét ngoài yêu cầu.`;
 
       // Ensure API key has Bearer prefix
       const authHeader = savedKey.startsWith("Bearer ") ? savedKey : `Bearer ${savedKey}`;
@@ -593,7 +688,7 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
           "Authorization": authHeader,
         },
         body: JSON.stringify({
-          model: "mistralai/devstral-2512:free",
+          model: "google/gemma-3n-e2b-it:free",
           messages: [
             {
               role: "user",
