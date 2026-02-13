@@ -36,7 +36,7 @@ const IntroSection = ({ onComplete }: { onComplete: () => void }) => {
           smooth: "easeInOutQuart",
           containerId: "valentine-container",
         });
-      }, 3000); // Wait 3 seconds before scrolling
+      }, 1000); // Wait 3 seconds before scrolling
 
       return () => clearTimeout(timer);
     }

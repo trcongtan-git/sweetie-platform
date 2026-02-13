@@ -147,11 +147,13 @@ const LetterSection = () => {
                   y: isLetterPoppedUp ? (isLetterUnfolded ? 120 : [0, -200, 40]) : 0,
                   zIndex: isLetterPoppedUp ? (isLetterUnfolded ? 20 : 40) : 10,
                   z: isLetterPoppedUp ? (isLetterUnfolded ? 0 : 10) : 0,
+                  rotate: isLetterPoppedUp ? (isLetterUnfolded ? 0 : [0, -5, 3]) : 0,
                   height: 160,
                 }}
-                whileHover={isEnvelopeOpen ? { y: 20 } : {}}
+                whileHover={isEnvelopeOpen ? { y: 20, rotate: 0 } : {}}
                 transition={{ 
                   y: { duration: isLetterUnfolded ? 0.5 : 1.5, times: [0, 0.4, 1], ease: "easeInOut" },
+                  rotate: { duration: isLetterUnfolded ? 0.5 : 1.5, times: [0, 0.4, 1], ease: "easeInOut" },
                   zIndex: { delay: isLetterPoppedUp ? 0.6 : 0 },
                   z: { delay: isLetterPoppedUp ? 0.6 : 0 },
                   default: { duration: 0.5 }
