@@ -135,6 +135,9 @@ const LetterSection = () => {
           >
             {/* Envelope Body (Back) */}
             <div className="absolute inset-0 bg-[#f1a7b7] rounded-md" />
+            
+            {/* Border Overlay (Ensures edges are visible) */}
+            <div className="absolute inset-0 border-2 border-[#b2627b] rounded-md pointer-events-none" />
 
               {/* The Letter Paper (Inner - Folded State Only) */}
               <motion.div
@@ -161,22 +164,34 @@ const LetterSection = () => {
               </motion.div>
             {/* Envelope Flap (Top) */}
             <motion.div 
-              className="absolute top-0 left-0 w-0 h-0 border-l-[160px] border-r-[160px] border-t-[105px] border-l-transparent border-r-transparent border-t-[#f1a7b7] origin-top z-40 drop-shadow-[0_2px_0_#b2627b] pointer-events-none"
-              animate={{ rotateX: isEnvelopeOpen ? 180 : 0 }}
+              className="absolute top-0 left-0 w-0 h-0 border-l-[160px] border-r-[160px] border-t-[105px] border-l-transparent border-r-transparent border-t-[#f1a7b7] origin-top drop-shadow-[0_2px_0_#b2627b] pointer-events-none"
+              initial={{ zIndex: 40 }}
+              animate={{ 
+                rotateX: isEnvelopeOpen ? 180 : 0,
+                zIndex: isEnvelopeOpen ? 0 : 40
+              }}
               transition={{ duration: 0.6 }}
             />
 
             {/* Left Flap */}
-            <div className="absolute top-0 left-0 w-0 h-0 border-l-[160px] border-t-[96px] border-b-[96px] border-t-transparent border-b-transparent border-l-[#f1a7b7] z-30 drop-shadow-[1px_0_0_#b2627b] pointer-events-none" />
+            <div 
+              className="absolute top-0 left-0 w-0 h-0 border-l-[160px] border-t-[96px] border-b-[96px] border-t-transparent border-b-transparent border-l-[#f1a7b7] z-30 drop-shadow-[1px_0_0_#b2627b] pointer-events-none" 
+              style={{ transform: "translateZ(2px)" }}
+            />
             
             {/* Right Flap */}
-            <div className="absolute top-0 right-0 w-0 h-0 border-r-[160px] border-t-[96px] border-b-[96px] border-t-transparent border-b-transparent border-r-[#f1a7b7] z-30 drop-shadow-[-1px_0_0_#b2627b] pointer-events-none" />
+            <div 
+              className="absolute top-0 right-0 w-0 h-0 border-r-[160px] border-t-[96px] border-b-[96px] border-t-transparent border-b-transparent border-r-[#f1a7b7] z-30 drop-shadow-[-1px_0_0_#b2627b] pointer-events-none" 
+              style={{ transform: "translateZ(2px)" }}
+            />
 
             {/* Bottom Flap */}
-            <div className="absolute bottom-0 left-0 w-0 h-0 border-b-[105px] border-l-[160px] border-r-[160px] border-l-transparent border-r-transparent border-b-[#f1a7b7] z-30 drop-shadow-[0_-1px_0_#b2627b] pointer-events-none" />
+            <div 
+              className="absolute bottom-0 left-0 w-0 h-0 border-b-[105px] border-l-[160px] border-r-[160px] border-l-transparent border-r-transparent border-b-[#f1a7b7] z-30 drop-shadow-[0_-1px_0_#b2627b] pointer-events-none" 
+              style={{ transform: "translateZ(2px)" }}
+            />
               
-              {/* Border Overlay (Ensures edges are visible) */}
-              <div className="absolute inset-0 border-2 border-[#b2627b] rounded-md z-50 pointer-events-none" />
+
               
               {/* Heart Seal */}
               <motion.div
