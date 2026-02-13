@@ -11,6 +11,7 @@ const LetterSection = () => {
   const [showHearts, setShowHearts] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [isLetterPoppedUp, setIsLetterPoppedUp] = useState(false);
+  const [hasAnimatedOut, setHasAnimatedOut] = useState(false);
 
   useEffect(() => {
     if (isEnvelopeOpen) {
@@ -20,8 +21,19 @@ const LetterSection = () => {
       return () => clearTimeout(timer);
     } else {
       setIsLetterPoppedUp(false);
+      setHasAnimatedOut(false);
     }
   }, [isEnvelopeOpen]);
+
+  // Mark animation as completed so closing popup doesn't re-trigger keyframes
+  useEffect(() => {
+    if (isLetterPoppedUp) {
+      const timer = setTimeout(() => {
+        setHasAnimatedOut(true);
+      }, 1600); // slightly after the 1.5s animation
+      return () => clearTimeout(timer);
+    }
+  }, [isLetterPoppedUp]);
 
   const handleEnvelopeClick = () => {
     if (!isEnvelopeOpen) {
@@ -144,16 +156,16 @@ const LetterSection = () => {
                 className="absolute left-4 right-4 bg-white p-4 shadow-sm overflow-hidden font-serif cursor-pointer hover:bg-gray-50 transition-colors"
                 initial={{ y: 0, zIndex: 10 }}
                 animate={{ 
-                  y: isLetterPoppedUp ? (isLetterUnfolded ? 120 : [0, -200, 40]) : 0,
-                  zIndex: isLetterPoppedUp ? (isLetterUnfolded ? 20 : 40) : 10,
-                  z: isLetterPoppedUp ? (isLetterUnfolded ? 0 : 10) : 0,
-                  rotate: isLetterPoppedUp ? (isLetterUnfolded ? 0 : [0, -5, 3]) : 0,
+                  y: isLetterPoppedUp ? (hasAnimatedOut ? 40 : [0, -200, 40]) : 0,
+                  zIndex: isLetterPoppedUp ? 40 : 10,
+                  z: isLetterPoppedUp ? 10 : 0,
+                  rotate: isLetterPoppedUp ? (hasAnimatedOut ? 3 : [0, -5, 3]) : 0,
                   height: 160,
                 }}
                 whileHover={isEnvelopeOpen ? { y: 20, rotate: 0 } : {}}
                 transition={{ 
-                  y: { duration: isLetterUnfolded ? 0.5 : 1.5, times: [0, 0.4, 1], ease: "easeInOut" },
-                  rotate: { duration: isLetterUnfolded ? 0.5 : 1.5, times: [0, 0.4, 1], ease: "easeInOut" },
+                  y: { duration: hasAnimatedOut ? 0.3 : 1.5, times: hasAnimatedOut ? undefined : [0, 0.4, 1], ease: "easeInOut" },
+                  rotate: { duration: hasAnimatedOut ? 0.3 : 1.5, times: hasAnimatedOut ? undefined : [0, 0.4, 1], ease: "easeInOut" },
                   zIndex: { delay: isLetterPoppedUp ? 0.6 : 0 },
                   z: { delay: isLetterPoppedUp ? 0.6 : 0 },
                   default: { duration: 0.5 }
