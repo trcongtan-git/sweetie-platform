@@ -197,8 +197,12 @@ const LetterSection = () => {
               
               {/* Heart Seal */}
               <motion.div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 text-[#d97c91] drop-shadow-md"
+                className="absolute top-1/2 left-1/2 z-50 text-[#d97c91] drop-shadow-md"
+                initial={{ x: "-50%", y: "-50%", z: 3, opacity: 1, scale: 1 }}
                 animate={{ 
+                  x: "-50%",
+                  y: "-50%",
+                  z: 3,
                   opacity: isEnvelopeOpen ? 0 : 1,
                   scale: isEnvelopeOpen ? 0 : 1
                 }}
