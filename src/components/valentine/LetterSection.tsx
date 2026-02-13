@@ -52,7 +52,7 @@ const LetterSection = () => {
     }
 
     e.stopPropagation();
-    setIsLetterUnfolded(true);
+    setIsLetterUnfolded(!isLetterUnfolded);
   };
 
   return (
@@ -151,30 +151,77 @@ const LetterSection = () => {
             {/* Border Overlay (Ensures edges are visible) */}
             <div className="absolute inset-0 border-2 border-[#b2627b] rounded-md pointer-events-none" />
 
-              {/* The Letter Paper (Inner - Folded State Only) */}
+              {/* The Letter Paper (Inner) */}
               <motion.div
-                className="absolute left-4 right-4 bg-white p-4 shadow-sm overflow-hidden font-serif cursor-pointer hover:bg-gray-50 transition-colors"
+                className="absolute left-4 right-4 cursor-pointer"
                 initial={{ y: 0, zIndex: 10 }}
                 animate={{ 
-                  y: isLetterPoppedUp ? (hasAnimatedOut ? 40 : [0, -200, 40]) : 0,
+                  y: isLetterPoppedUp ? (isLetterUnfolded ? -180 : (hasAnimatedOut ? 40 : [0, -200, 40])) : 0,
                   zIndex: isLetterPoppedUp ? 40 : 10,
                   z: isLetterPoppedUp ? 10 : 0,
-                  rotate: isLetterPoppedUp ? (hasAnimatedOut ? 3 : [0, -5, 3]) : 0,
-                  height: 160,
+                  rotate: isLetterPoppedUp ? (isLetterUnfolded ? 2 : (hasAnimatedOut ? 3 : [0, -5, 3])) : 0,
+                  scale: isLetterUnfolded ? 1.3 : 1,
                 }}
-                whileHover={isEnvelopeOpen ? { y: 20, rotate: 0 } : {}}
+                whileHover={isEnvelopeOpen && !isLetterUnfolded ? { y: 20, rotate: 0 } : {}}
                 transition={{ 
-                  y: { duration: hasAnimatedOut ? 0.3 : 1.5, times: hasAnimatedOut ? undefined : [0, 0.4, 1], ease: "easeInOut" },
-                  rotate: { duration: hasAnimatedOut ? 0.3 : 1.5, times: hasAnimatedOut ? undefined : [0, 0.4, 1], ease: "easeInOut" },
+                  y: { duration: hasAnimatedOut ? 0.5 : 1.5, times: hasAnimatedOut ? undefined : [0, 0.4, 1], ease: "easeInOut" },
+                  rotate: { duration: hasAnimatedOut ? 0.5 : 1.5, times: hasAnimatedOut ? undefined : [0, 0.4, 1], ease: "easeInOut" },
                   zIndex: { delay: isLetterPoppedUp ? 0.6 : 0 },
                   z: { delay: isLetterPoppedUp ? 0.6 : 0 },
                   default: { duration: 0.5 }
                 }}
                 onClick={handleLetterClick}
+                style={{ perspective: "800px" }}
               >
-                  <div className="w-full h-full flex items-center justify-center opacity-70 text-sm tracking-widest text-pink-500 font-bold uppercase animate-pulse text-center">
-                     {isEnvelopeOpen ? "Happy Valentine của đôi ta" : ""}
-                  </div>
+                  {/* Full Letter Content - clipped when folded */}
+                  <motion.div 
+                    className="relative w-full bg-white rounded-sm shadow-md overflow-hidden font-serif"
+                    animate={{ height: isLetterUnfolded ? 320 : 160 }}
+                    transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
+                  >
+                    {/* Full letter content (always in DOM, revealed by fold cover lifting) */}
+                    <div className="px-5 py-4 text-gray-800 h-[320px]">
+                      <h3 className="text-base font-bold text-pink-600 mb-3 font-cursive text-center">Gửi người thương,</h3>
+                      <div className="text-xs leading-relaxed space-y-2 text-justify">
+                        <p>
+                          Ngày Valentine này, anh muốn gửi đến em những lời yêu thương chân thành nhất. Cảm ơn em đã đến bên anh và mang lại cho anh những nụ cười hạnh phúc.
+                        </p>
+                        <p>
+                          Mỗi ngày bên em đều là một ngày đặc biệt. Mong rằng chúng ta sẽ cùng nhau viết tiếp những trang sách tuyệt vời của cuộc đời mình.
+                        </p>
+                        <p>
+                          Yêu em nhiều hơn những gì anh có thể nói.
+                        </p>
+                      </div>
+                      <div className="mt-3 w-full text-right font-bold text-pink-500 font-cursive text-sm">
+                        - From [Tên Bạn] -
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  {/* Fold Cover - physically covers top half, flips down to reveal content */}
+                  <motion.div 
+                    className="absolute top-0 left-0 right-0 h-[160px] bg-white rounded-t-sm shadow-sm overflow-hidden font-serif"
+                    initial={{ rotateX: 0 }}
+                    animate={{ 
+                      rotateX: isLetterUnfolded ? 180 : 0,
+                    }}
+                    transition={{ 
+                      duration: 0.8, 
+                      ease: [0.4, 0, 0.2, 1]
+                    }}
+                    style={{ 
+                      transformOrigin: "bottom center",
+                      backfaceVisibility: "hidden",
+                    }}
+                  >
+                    {/* Label on fold cover - goes with it when it flips */}
+                    <div className="absolute inset-0 flex items-center justify-center text-sm tracking-widest text-pink-500 font-bold uppercase text-center">
+                      {isEnvelopeOpen ? "Happy Valentine của đôi ta" : ""}
+                    </div>
+                    {/* Fold line decoration */}
+                    <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-pink-200/50" />
+                  </motion.div>
               </motion.div>
             {/* Envelope Flap (Top) */}
             <motion.div 
@@ -228,48 +275,8 @@ const LetterSection = () => {
       </motion.div>
     </div>
 
-      {/* Full Screen Letter Overlay - Ensures it's on top of everything */}
-      <AnimatePresence>
-      {isLetterUnfolded && (
-        <motion.div 
-           className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm"
-           initial={{ opacity: 0 }}
-           animate={{ opacity: 1 }}
-           exit={{ opacity: 0 }}
-           onClick={() => setIsLetterUnfolded(false)}
-        >
-          <motion.div 
-            className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full font-serif relative"
-            initial={{ scale: 0.5, y: 100, rotate: -5 }}
-            animate={{ scale: 1, y: 0, rotate: 0 }}
-            exit={{ scale: 0.5, y: 100, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-             <div className="absolute top-4 right-4 text-gray-400 cursor-pointer hover:text-pink-500" onClick={() => setIsLetterUnfolded(false)}>✕</div>
-             <div className="h-full flex flex-col items-center text-gray-800">
-               <h3 className="text-2xl font-bold text-pink-600 mb-6 font-cursive text-center">Gửi người thương,</h3>
-               <div className="text-base leading-relaxed space-y-4 text-justify">
-                 <p>
-                   Ngày Valentine này, anh muốn gửi đến em những lời yêu thương chân thành nhất. Cảm ơn em đã đến bên anh và mang lại cho anh những nụ cười hạnh phúc.
-                 </p>
-                 <p>
-                   Mỗi ngày bên em đều là một ngày đặc biệt. Mong rằng chúng ta sẽ cùng nhau viết tiếp những trang sách tuyệt vời của cuộc đời mình.
-                 </p>
-                 <p>
-                   Yêu em nhiều hơn những gì anh có thể nói.
-                 </p>
-               </div>
-               <div className="mt-10 w-full text-right font-bold text-pink-500 font-cursive text-xl">
-                 - From [Tên Bạn] -
-               </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-      </AnimatePresence>
-
        <div className="absolute bottom-10 text-pink-400 text-xs animate-bounce opacity-70">
-          {isLetterUnfolded ? "Chạm vào vùng trống để đóng lại" : "Chạm vào phong thư để mở"}
+          {isLetterUnfolded ? "Chạm vào lá thư để gấp lại" : "Chạm vào phong thư để mở"}
        </div>
     </section>
   );
