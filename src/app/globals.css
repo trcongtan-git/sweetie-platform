@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
-@import '../styles/table.css';
+@import "../styles/table.css";
 
 :root {
   --background: #ffffff;
@@ -11,7 +11,9 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter), "Inter", sans-serif;
-  --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  --font-mono:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New",
+    monospace;
 }
 
 /* Force light theme - ignore browser preference */
@@ -174,9 +176,16 @@ body {
 }
 
 /* Dynamic table layout - responsive to container width */
-.kf-tbl-hover { width: 100%; }
-.kf-tbl-hover .row { display: flex; width: 100%; }
-.kf-tbl-hover .cell { overflow: hidden; }
+.kf-tbl-hover {
+  width: 100%;
+}
+.kf-tbl-hover .row {
+  display: flex;
+  width: 100%;
+}
+.kf-tbl-hover .cell {
+  overflow: hidden;
+}
 
 /* Remove global overrides that force first columns to 70/15/15 (causing wide ID) */
 .kf-tbl-hover .row > div,
@@ -186,7 +195,6 @@ body {
   width: auto;
   max-width: none;
 }
-
 
 /* Action buttons based on drawer state */
 .action-button-desktop {
@@ -234,4 +242,15 @@ body {
   background-color: transparent !important;
   border-color: #155eef !important;
   border-style: dashed !important;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
