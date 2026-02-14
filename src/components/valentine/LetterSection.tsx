@@ -175,26 +175,55 @@ const LetterSection = () => {
               >
                   {/* Full Letter Content - clipped when folded */}
                   <motion.div 
-                    className="relative w-full bg-white rounded-sm shadow-md overflow-hidden font-serif"
-                    animate={{ height: isLetterUnfolded ? 320 : 160 }}
+                    className="relative w-full rounded-sm shadow-md overflow-hidden font-serif"
+                    animate={{ height: isLetterUnfolded ? 406 : 160 }}
                     transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
                   >
+                     {/* Background Image for Letter Main */}
+                     <div className="absolute inset-0 z-0">
+                        <img 
+                          src="/images/letter-main.png" 
+                          alt="Letter Content Background" 
+                          className="w-full h-full object-cover"
+                        />
+                     </div>
+
                     {/* Full letter content (always in DOM, revealed by fold cover lifting) */}
-                    <div className="px-5 py-4 text-gray-800 h-[320px]">
-                      <h3 className="text-base font-bold text-pink-600 mb-3 font-cursive text-center">Gửi người thương,</h3>
-                      <div className="text-xs leading-relaxed space-y-2 text-justify">
-                        <p>
-                          Ngày Valentine này, anh muốn gửi đến em những lời yêu thương chân thành nhất. Cảm ơn em đã đến bên anh và mang lại cho anh những nụ cười hạnh phúc.
-                        </p>
-                        <p>
-                          Mỗi ngày bên em đều là một ngày đặc biệt. Mong rằng chúng ta sẽ cùng nhau viết tiếp những trang sách tuyệt vời của cuộc đời mình.
-                        </p>
-                        <p>
-                          Yêu em nhiều hơn những gì anh có thể nói.
-                        </p>
-                      </div>
-                      <div className="mt-3 w-full text-right font-bold text-pink-500 font-cursive text-sm">
-                        - From [Tên Bạn] -
+                    <div className="relative z-10 pl-10 pr-12 py-8 text-gray-800 h-[406px] flex flex-col">
+                      <div className="mt-20 space-y-4">
+                        <h3 className="text-[8px] font-bold text-pink-600 mb-2 font-cursive text-left -ml-1">Em bé thương mến,</h3>
+                        <div className="text-[6px] leading-[3] tracking-wide text-justify font-medium">
+                          <p className="pl-0 -ml-1 text-left mt-5">
+                            Hôm nay là một ngày thật đặc biệt khi đang
+                          </p>
+                          <p className="pl-0 -ml-1 text-left ">
+                            trong tiết trời cận tết, và cũng là ngày lễ tình nhân,
+                          </p>
+                           <p className="pl-0 -ml-1 text-left">
+                            ngày lễ của đôi ta, ngày anh trở về bên cạnh em bé nhỏ
+                          </p>
+                          <p className="pl-0 -ml-1 text-left">
+                            của lòng anh. Không có gì tuyệt vời hơi khi có bé Vy nhà mình
+                          </p>
+                          <p className="pl-0 -ml-1 text-left">
+                            ở trên cuộc đời này và cổ hiện tại đã thuộc về anh. Cảm ơn em bé
+                          </p>
+                          <p className="pl-0 -ml-1 text-left">
+                            vì đã đến, đã cho phép anh được yêu thương, quan tâm, chăm sóc
+                          </p>
+                          <p className="pl-0 -ml-1 text-left">
+                            em trong thời qua và những ngày tháng sắp tới. Hy vọng rằng hôm
+                          </p>
+                          <p className="pl-0 -ml-1 text-left">
+                            nay, valentine năm sau, nhiều năm tới, và ở một danh phận chúng
+                          </p>
+                          <p className="pl-0 -ml-1 text-left">
+                            mình mong đợi, em bé sẽ thật hạnh phúc khi có anh ở trong đời em.
+                          </p>
+                        </div>
+                        <div className="w-full text-left font-bold text-pink-500 font-cursive text-[8px] mt-4 -ml-1">
+                          Anh yêu em, Bảo Bối bé nhỏ của chồng &lt;3
+                        </div>
                       </div>
                     </div>
                   </motion.div>
@@ -215,10 +244,15 @@ const LetterSection = () => {
                       backfaceVisibility: "hidden",
                     }}
                   >
-                    {/* Label on fold cover - goes with it when it flips */}
-                    <div className="absolute inset-0 flex items-center justify-center text-sm tracking-widest text-pink-500 font-bold uppercase text-center">
-                      {isEnvelopeOpen ? "Happy Valentine của đôi ta" : ""}
+                    {/* Cover Image */}
+                    <div className="absolute inset-0">
+                      <img 
+                        src="/images/letter-cover.png" 
+                        alt="Letter Cover" 
+                        className="w-full h-full object-cover"
+                      />
                     </div>
+                    
                     {/* Fold line decoration */}
                     <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-pink-200/50" />
                   </motion.div>
