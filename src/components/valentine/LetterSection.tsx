@@ -5,6 +5,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart } from 'lucide-react';
 
 
+const LETTER_CONTENT = [
+  { text: "Em bé thương mến,", className: "text-[8px] font-bold text-pink-600 mb-2 font-cursive text-left -ml-1" },
+  { text: "Hôm nay là một ngày thật đặc biệt khi đang", className: "pl-0 -ml-1 text-left mt-5" },
+  { text: "trong tiết trời cận tết, và cũng là ngày lễ tình nhân,", className: "pl-0 -ml-1 text-left " },
+  { text: "ngày lễ của đôi ta, ngày anh trở về bên cạnh em bé nhỏ", className: "pl-0 -ml-1 text-left" },
+  { text: "của lòng anh. Không có gì tuyệt vời hơi khi có bé Vy nhà mình", className: "pl-0 -ml-1 text-left" },
+  { text: "ở trên cuộc đời này và cổ hiện tại đã thuộc về anh. Cảm ơn em bé", className: "pl-0 -ml-1 text-left" },
+  { text: "vì đã đến, đã cho phép anh được yêu thương, quan tâm, chăm sóc", className: "pl-0 -ml-1 text-left" },
+  { text: "em trong thời qua và những ngày tháng sắp tới. Hy vọng rằng hôm", className: "pl-0 -ml-1 text-left" },
+  { text: "nay, valentine năm sau, nhiều năm tới, và ở một danh phận chúng", className: "pl-0 -ml-1 text-left" },
+  { text: "mình mong đợi, em bé sẽ thật hạnh phúc khi có anh ở trong đời em.", className: "pl-0 -ml-1 text-left" },
+  { text: "Anh yêu em, Bảo Bối bé nhỏ của chồng <3", className: "w-full text-left font-bold text-pink-500 font-cursive text-[8px] mt-4 -ml-1" }
+];
+
 const LetterSection = () => {
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
   const [isLetterUnfolded, setIsLetterUnfolded] = useState(false);
@@ -12,6 +26,34 @@ const LetterSection = () => {
   const [isInView, setIsInView] = useState(false);
   const [isLetterPoppedUp, setIsLetterPoppedUp] = useState(false);
   const [hasAnimatedOut, setHasAnimatedOut] = useState(false);
+  const [typingDisplay, setTypingDisplay] = useState({ line: -1, char: 0 });
+
+  useEffect(() => {
+    if (!isLetterUnfolded) {
+      setTypingDisplay({ line: -1, char: 0 });
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setTypingDisplay(prev => {
+        // If not started, start at first line
+        if (prev.line === -1) return { line: 0, char: 0 };
+
+        // If finished all lines, stop
+        if (prev.line >= LETTER_CONTENT.length) return prev;
+
+        const currentText = LETTER_CONTENT[prev.line].text;
+        
+        if (prev.char < currentText.length) {
+          return { ...prev, char: prev.char + 1 };
+        } else {
+          return { line: prev.line + 1, char: 0 };
+        }
+      });
+    }, 30); // Typing speed 30ms
+
+    return () => clearInterval(interval);
+  }, [isLetterUnfolded]);
 
   useEffect(() => {
     if (isEnvelopeOpen) {
@@ -191,38 +233,27 @@ const LetterSection = () => {
                     {/* Full letter content (always in DOM, revealed by fold cover lifting) */}
                     <div className="relative z-10 pl-10 pr-12 py-8 text-gray-800 h-[406px] flex flex-col">
                       <div className="mt-20 space-y-4">
-                        <h3 className="text-[8px] font-bold text-pink-600 mb-2 font-cursive text-left -ml-1">Em bé thương mến,</h3>
+                        {/* Header - Index 0 */}
+                        <h3 className={LETTER_CONTENT[0].className}>
+                          {typingDisplay.line > 0 ? LETTER_CONTENT[0].text : (typingDisplay.line === 0 ? LETTER_CONTENT[0].text.slice(0, typingDisplay.char) : "")}
+                        </h3>
+                        
+                        {/* Body - Index 1 to 9 */}
                         <div className="text-[6px] leading-[3] tracking-wide text-justify font-medium">
-                          <p className="pl-0 -ml-1 text-left mt-5">
-                            Hôm nay là một ngày thật đặc biệt khi đang
-                          </p>
-                          <p className="pl-0 -ml-1 text-left ">
-                            trong tiết trời cận tết, và cũng là ngày lễ tình nhân,
-                          </p>
-                           <p className="pl-0 -ml-1 text-left">
-                            ngày lễ của đôi ta, ngày anh trở về bên cạnh em bé nhỏ
-                          </p>
-                          <p className="pl-0 -ml-1 text-left">
-                            của lòng anh. Không có gì tuyệt vời hơi khi có bé Vy nhà mình
-                          </p>
-                          <p className="pl-0 -ml-1 text-left">
-                            ở trên cuộc đời này và cổ hiện tại đã thuộc về anh. Cảm ơn em bé
-                          </p>
-                          <p className="pl-0 -ml-1 text-left">
-                            vì đã đến, đã cho phép anh được yêu thương, quan tâm, chăm sóc
-                          </p>
-                          <p className="pl-0 -ml-1 text-left">
-                            em trong thời qua và những ngày tháng sắp tới. Hy vọng rằng hôm
-                          </p>
-                          <p className="pl-0 -ml-1 text-left">
-                            nay, valentine năm sau, nhiều năm tới, và ở một danh phận chúng
-                          </p>
-                          <p className="pl-0 -ml-1 text-left">
-                            mình mong đợi, em bé sẽ thật hạnh phúc khi có anh ở trong đời em.
-                          </p>
+                          {LETTER_CONTENT.slice(1, 10).map((line, idx) => {
+                             const globalIdx = idx + 1;
+                             const textToShow = typingDisplay.line > globalIdx ? line.text : (typingDisplay.line === globalIdx ? line.text.slice(0, typingDisplay.char) : "");
+                             return (
+                               <p key={idx} className={line.className}>
+                                 {textToShow || "\u00A0"}
+                               </p>
+                             );
+                          })}
                         </div>
-                        <div className="w-full text-left font-bold text-pink-500 font-cursive text-[8px] mt-4 -ml-1">
-                          Anh yêu em, Bảo Bối bé nhỏ của chồng &lt;3
+
+                        {/* Footer - Index 10 */}
+                        <div className={LETTER_CONTENT[10].className}>
+                           {typingDisplay.line > 10 ? LETTER_CONTENT[10].text : (typingDisplay.line === 10 ? LETTER_CONTENT[10].text.slice(0, typingDisplay.char) : "")}
                         </div>
                       </div>
                     </div>
