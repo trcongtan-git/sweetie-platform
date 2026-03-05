@@ -660,7 +660,7 @@ Học viên (HV) là một người chăm chỉ...
 
 5. Quy định độ dài:
 
-- Độ dài đoạn văn: 50 – 70 từ
+- Độ dài đoạn văn: 50 – 70 từ 
 
 
 ====================
