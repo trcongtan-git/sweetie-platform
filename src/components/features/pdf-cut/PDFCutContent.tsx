@@ -39,14 +39,40 @@ const PDFCutContent: React.FC<PDFCutContentProps> = ({
   onExport,
 }) => {
   const [showOnlySelected, setShowOnlySelected] = useState(false);
-
-  const handleExport = useCallback(async () => {
-    await onExport();
-  }, [onExport]);
+  const [nextLoadIndex, setNextLoadIndex] = useState(0);
+  const [previewCache, setPreviewCache] = useState<Record<number, string>>({});
 
   const pagesToShow = showOnlySelected
     ? Array.from(selectedPages).sort((a, b) => a - b)
     : Array.from({ length: pageCount }, (_, i) => i + 1);
+
+  const handleLoadComplete = useCallback(() => {
+    setNextLoadIndex((prev) => Math.min(prev + 1, pagesToShow.length));
+  }, [pagesToShow.length]);
+
+  const handlePreviewLoaded = useCallback((pageNum: number, dataUrl: string) => {
+    setPreviewCache((prev) => ({ ...prev, [pageNum]: dataUrl }));
+  }, []);
+
+  const handleShowOnlySelectedChange = useCallback(
+    (checked: boolean) => {
+      setShowOnlySelected(checked);
+      setNextLoadIndex(() => {
+        const newPagesToShow = checked
+          ? Array.from(selectedPages).sort((a, b) => a - b)
+          : Array.from({ length: pageCount }, (_, i) => i + 1);
+        const firstUncached = newPagesToShow.findIndex(
+          (num) => !previewCache[num]
+        );
+        return firstUncached >= 0 ? firstUncached : newPagesToShow.length;
+      });
+    },
+    [selectedPages, pageCount, previewCache]
+  );
+
+  const handleExport = useCallback(async () => {
+    await onExport();
+  }, [onExport]);
 
   return (
     <ContentLayout
@@ -74,7 +100,7 @@ const PDFCutContent: React.FC<PDFCutContentProps> = ({
           </Space>
           <Checkbox
             checked={showOnlySelected}
-            onChange={(e) => setShowOnlySelected(e.target.checked)}
+            onChange={(e) => handleShowOnlySelectedChange(e.target.checked)}
           >
             Chỉ hiển thị trang đã chọn để preview nhanh
           </Checkbox>
@@ -93,13 +119,17 @@ const PDFCutContent: React.FC<PDFCutContentProps> = ({
         }}
       >
         {pdfJsDocument &&
-          pagesToShow.map((num) => (
+          pagesToShow.map((num, index) => (
             <PDFPagePreview
               key={num}
               pdfDocument={pdfJsDocument}
               pageNumber={num}
               isSelected={selectedPages.has(num)}
               onTogglePage={onTogglePage}
+              shouldLoad={index === nextLoadIndex}
+              onLoadComplete={handleLoadComplete}
+              cachedPreviewUrl={previewCache[num]}
+              onPreviewLoaded={handlePreviewLoaded}
             />
           ))}
       </div>

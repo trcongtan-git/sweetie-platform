@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Checkbox, Spin } from "antd";
+import React, { useState, useEffect, useCallback } from "react";
+import { Button, Checkbox, Image, Spin } from "antd";
+import { ZoomInOutlined } from "@ant-design/icons";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import { renderPdfPageToDataUrl } from "@/features/pdf-cut/hooks/usePdfCut";
 
@@ -10,6 +11,10 @@ interface PDFPagePreviewProps {
   pageNumber: number;
   isSelected: boolean;
   onTogglePage: (pageNum: number) => void;
+  shouldLoad: boolean;
+  onLoadComplete: () => void;
+  cachedPreviewUrl?: string | null;
+  onPreviewLoaded?: (pageNum: number, dataUrl: string) => void;
 }
 
 const PDFPagePreview: React.FC<PDFPagePreviewProps> = ({
@@ -17,60 +22,63 @@ const PDFPagePreview: React.FC<PDFPagePreviewProps> = ({
   pageNumber,
   isSelected,
   onTogglePage,
+  shouldLoad,
+  onLoadComplete,
+  cachedPreviewUrl,
+  onPreviewLoaded,
 }) => {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(cachedPreviewUrl ?? null);
+  const [loading, setLoading] = useState(!cachedPreviewUrl);
   const [error, setError] = useState<string | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const hasStartedLoad = useRef(false);
+  const [imagePreviewVisible, setImagePreviewVisible] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
-    hasStartedLoad.current = false;
-    const el = containerRef.current;
-    if (!el) return;
+    if (cachedPreviewUrl) {
+      setPreviewUrl(cachedPreviewUrl);
+      setLoading(false);
+      if (shouldLoad) {
+        onLoadComplete();
+      }
+      return;
+    }
+  }, [cachedPreviewUrl, shouldLoad, onLoadComplete]);
 
-    const runLoad = () => {
-      const load = async () => {
-        try {
-          const dataUrl = await renderPdfPageToDataUrl(pdfDocument, pageNumber, 1.2);
-          if (!cancelled) {
-            setPreviewUrl(dataUrl);
-          }
-        } catch (err) {
-          if (!cancelled) {
-            setError(err instanceof Error ? err.message : "Không thể tải preview");
-          }
-        } finally {
-          if (!cancelled) {
-            setLoading(false);
-          }
+  useEffect(() => {
+    if (!shouldLoad || cachedPreviewUrl) return;
+
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const dataUrl = await renderPdfPageToDataUrl(pdfDocument, pageNumber, 1.2);
+        if (!cancelled) {
+          setPreviewUrl(dataUrl);
+          onPreviewLoaded?.(pageNumber, dataUrl);
         }
-      };
-      load();
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Không thể tải preview");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+          onLoadComplete();
+        }
+      }
     };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (!entry?.isIntersecting || hasStartedLoad.current) return;
-        hasStartedLoad.current = true;
+    const delay = pageNumber === 1 ? 100 : 0;
+    const id = setTimeout(() => {
+      if (!cancelled) {
+        load();
+      }
+    }, delay);
 
-        if (typeof requestIdleCallback !== "undefined") {
-          requestIdleCallback(runLoad, { timeout: 200 });
-        } else {
-          setTimeout(runLoad, 0);
-        }
-      },
-      { rootMargin: "100px", threshold: 0.01 }
-    );
-
-    observer.observe(el);
     return () => {
       cancelled = true;
-      observer.disconnect();
+      clearTimeout(id);
     };
-  }, [pdfDocument, pageNumber]);
+  }, [pdfDocument, pageNumber, shouldLoad, onLoadComplete, cachedPreviewUrl, onPreviewLoaded]);
 
   const handleClick = useCallback(() => {
     onTogglePage(pageNumber);
@@ -78,7 +86,6 @@ const PDFPagePreview: React.FC<PDFPagePreviewProps> = ({
 
   return (
     <div
-      ref={containerRef}
       style={{
         border: `2px solid ${isSelected ? "#1677ff" : "#e5e7eb"}`,
         borderRadius: "8px",
@@ -115,15 +122,41 @@ const PDFPagePreview: React.FC<PDFPagePreviewProps> = ({
           </div>
         )}
         {previewUrl && !loading && (
-          <img
-            src={previewUrl}
-            alt={`Trang ${pageNumber}`}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-            }}
-          />
+          <>
+            <Button
+              type="text"
+              size="small"
+              icon={<ZoomInOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                setImagePreviewVisible(true);
+              }}
+              style={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                zIndex: 10,
+                color: "rgba(0,0,0,0.65)",
+              }}
+            />
+            <Image
+              src={previewUrl}
+              style={{ display: "none" }}
+              preview={{
+                visible: imagePreviewVisible,
+                onVisibleChange: (v) => setImagePreviewVisible(v),
+              }}
+            />
+            <img
+              src={previewUrl}
+              alt={`Trang ${pageNumber}`}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
+              }}
+            />
+          </>
         )}
       </div>
       <div

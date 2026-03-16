@@ -29,6 +29,13 @@ export function usePdfCut() {
       const bufferForPdfJs = arrayBuffer.slice(0);
 
       const pdfJsDoc = await pdfjsLib.getDocument({ data: bufferForPdfJs }).promise;
+      // Warm up page 1 to trigger lazy parse - fixes "stuck loading" on first page
+      try {
+        const firstPage = await pdfJsDoc.getPage(1);
+        firstPage.cleanup?.();
+      } catch {
+        // Ignore - page 1 will load when preview renders
+      }
 
       setPdfData(bufferForExport);
       setPdfJsDocument(pdfJsDoc);
