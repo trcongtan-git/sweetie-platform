@@ -10,6 +10,7 @@ export interface ContentLayoutProps {
   breadcrumb?: React.ReactNode;
   children: React.ReactNode;
   headerHidden?: boolean;
+  stickyHeader?: boolean;
   style?: React.CSSProperties;
   className?: string;
 }
@@ -27,6 +28,7 @@ const ContentLayout: React.FC<ContentLayoutProps> = ({
   children,
   breadcrumb,
   headerHidden = false,
+  stickyHeader = false,
   style,
   className,
 }) => {
@@ -49,9 +51,28 @@ const ContentLayout: React.FC<ContentLayoutProps> = ({
             justifyContent: "space-between",
             height: 56,
             marginBottom: 12,
+            ...(stickyHeader && {
+              position: "sticky",
+              top: 0,
+              zIndex: 100,
+              backgroundColor: "#ffffff",
+              background: "#ffffff",
+              paddingTop: 8,
+              paddingBottom: 12,
+              marginBottom: 0,
+              borderBottom: "1px solid #e5e7eb",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+            }),
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              ...(stickyHeader && { backgroundColor: "#ffffff" }),
+            }}
+          >
             {breadcrumb && (
               <div style={{ marginBottom: 6, fontSize: 12, color: "#667085" }}>
                 {breadcrumb}
@@ -83,7 +104,17 @@ const ContentLayout: React.FC<ContentLayoutProps> = ({
               </>
             )}
           </div>
-          {actions && <div style={{ display: "flex", gap: 8 }}>{actions}</div>}
+          {actions && (
+            <div
+              style={{
+                display: "flex",
+                gap: 8,
+                ...(stickyHeader && { backgroundColor: "#ffffff" }),
+              }}
+            >
+              {actions}
+            </div>
+          )}
         </div>
       )}
 

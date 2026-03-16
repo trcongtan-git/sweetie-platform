@@ -7,7 +7,6 @@ import {
   DownloadOutlined,
   ReloadOutlined,
 } from "@ant-design/icons";
-import { ContentLayout } from "@/components/layouts";
 import PDFPagePreview from "./PDFPagePreview";
 import { saveAs } from "file-saver";
 import { message } from "antd";
@@ -75,8 +74,27 @@ const PDFCutContent: React.FC<PDFCutContentProps> = ({
   }, [onExport]);
 
   return (
-    <ContentLayout
-      actions={
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        minHeight: 0,
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          flexShrink: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          paddingBottom: 12,
+          marginBottom: 12,
+          borderBottom: "1px solid #e5e7eb",
+          backgroundColor: "#ffffff",
+        }}
+      >
         <Space direction="vertical" align="end" size={8}>
           <Space>
             <Button icon={<ReloadOutlined />} onClick={onReset}>
@@ -105,35 +123,43 @@ const PDFCutContent: React.FC<PDFCutContentProps> = ({
             Chỉ hiển thị trang đã chọn để preview nhanh
           </Checkbox>
         </Space>
-      }
-    >
-      <p style={{ marginBottom: 16, color: "#64748b", fontSize: 13 }}>
-        Tổng {pageCount} trang. Chọn các trang cần xuất.
-      </p>
+      </div>
 
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
-          gap: 16,
+          flex: 1,
+          minHeight: 0,
+          overflow: "auto",
         }}
       >
-        {pdfJsDocument &&
-          pagesToShow.map((num, index) => (
-            <PDFPagePreview
-              key={num}
-              pdfDocument={pdfJsDocument}
-              pageNumber={num}
-              isSelected={selectedPages.has(num)}
-              onTogglePage={onTogglePage}
-              shouldLoad={index === nextLoadIndex}
-              onLoadComplete={handleLoadComplete}
-              cachedPreviewUrl={previewCache[num]}
-              onPreviewLoaded={handlePreviewLoaded}
-            />
-          ))}
+        <p style={{ marginBottom: 16, color: "#64748b", fontSize: 13 }}>
+          Tổng {pageCount} trang. Chọn các trang cần xuất.
+        </p>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+            gap: 16,
+          }}
+        >
+          {pdfJsDocument &&
+            pagesToShow.map((num, index) => (
+              <PDFPagePreview
+                key={num}
+                pdfDocument={pdfJsDocument}
+                pageNumber={num}
+                isSelected={selectedPages.has(num)}
+                onTogglePage={onTogglePage}
+                shouldLoad={index === nextLoadIndex}
+                onLoadComplete={handleLoadComplete}
+                cachedPreviewUrl={previewCache[num]}
+                onPreviewLoaded={handlePreviewLoaded}
+              />
+            ))}
+        </div>
       </div>
-    </ContentLayout>
+    </div>
   );
 };
 

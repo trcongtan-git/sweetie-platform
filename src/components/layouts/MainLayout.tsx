@@ -24,7 +24,7 @@ interface MainLayoutProps {
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { showFooter, footerAction, footerLeftText, footerLeftAction, headerCenterContent } = useLayoutOptions();
+  const { showFooter, footerAction, footerLeftText, footerLeftAction, headerCenterContent, contentOverflow } = useLayoutOptions();
 
   const [collapsed, setCollapsed] = useState<boolean>(true);
   const [currentTime, setCurrentTime] = useState<string>("");
@@ -275,7 +275,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             height: showFooter
               ? "calc(100vh - 56px - 56px)"
               : "calc(100vh - 56px)",
-            overflow: "auto",
+            overflow: contentOverflow,
           }}
         >
           {children}

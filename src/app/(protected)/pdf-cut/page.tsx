@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { usePdfCut } from "@/features/pdf-cut/hooks/usePdfCut";
 import { PDFUploadModal, PDFCutContent } from "@/components/features/pdf-cut";
 import { saveAs } from "file-saver";
 import { message } from "antd";
+import { useLayoutOptions } from "@/providers/layoutOptions";
 
 export default function PdfCutPage() {
   const router = useRouter();
+  const { setContentOverflow } = useLayoutOptions();
   const {
     pdfData,
     fileName,
@@ -39,6 +41,14 @@ export default function PdfCutPage() {
     }
   }, [exportSelectedPages, fileName, error]);
 
+  // Khi PDF đã load: tắt scroll Content, chỉ grid bên trong cuộn → toolbar cố định
+  useEffect(() => {
+    if (pdfData) {
+      setContentOverflow("hidden");
+    }
+    return () => setContentOverflow("auto");
+  }, [pdfData, setContentOverflow]);
+
   return (
     <>
       {!pdfData && (
@@ -48,21 +58,31 @@ export default function PdfCutPage() {
           onFileSelected={loadPdf}
         />
       )}
-      {pdfData && (
-        <PDFCutContent
-          fileName={fileName}
-          pageCount={pageCount}
-          selectedPages={selectedPages}
-          isExporting={isExporting}
-          error={error}
-          pdfJsDocument={pdfJsDocument}
-          onReset={reset}
-          onTogglePage={togglePage}
-          onSelectAll={selectAll}
-          onSelectNone={selectNone}
-          onExport={handleExport}
-        />
-      )}
+      {pdfData ? (
+        <div
+          style={{
+            height: "100%",
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+        >
+          <PDFCutContent
+            fileName={fileName}
+            pageCount={pageCount}
+            selectedPages={selectedPages}
+            isExporting={isExporting}
+            error={error}
+            pdfJsDocument={pdfJsDocument}
+            onReset={reset}
+            onTogglePage={togglePage}
+            onSelectAll={selectAll}
+            onSelectNone={selectNone}
+            onExport={handleExport}
+          />
+        </div>
+      ) : null}
     </>
   );
 }

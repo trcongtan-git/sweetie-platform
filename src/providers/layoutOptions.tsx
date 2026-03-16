@@ -35,6 +35,8 @@ export interface LayoutOptions {
   setFooterLeftAction: (a: LayoutFooterLeftAction | null) => void;
   headerCenterContent: React.ReactNode | null;
   setHeaderCenterContent: (content: React.ReactNode | null) => void;
+  contentOverflow: "auto" | "hidden";
+  setContentOverflow: (v: "auto" | "hidden") => void;
 }
 
 const LayoutOptionsContext = createContext<LayoutOptions | undefined>(
@@ -51,9 +53,23 @@ export const LayoutOptionsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [footerLeftText, setFooterLeftText] = useState<string | null>(null);
   const [footerLeftAction, setFooterLeftAction] = useState<LayoutFooterLeftAction | null>(null);
   const [headerCenterContent, setHeaderCenterContent] = useState<React.ReactNode | null>(null);
+  const [contentOverflow, setContentOverflow] = useState<"auto" | "hidden">("auto");
   const value = useMemo(
-    () => ({ showFooter, setShowFooter, footerAction, setFooterAction, footerLeftText, setFooterLeftText, footerLeftAction, setFooterLeftAction, headerCenterContent, setHeaderCenterContent }),
-    [showFooter, footerAction, footerLeftText, footerLeftAction, headerCenterContent]
+    () => ({
+      showFooter,
+      setShowFooter,
+      footerAction,
+      setFooterAction,
+      footerLeftText,
+      setFooterLeftText,
+      footerLeftAction,
+      setFooterLeftAction,
+      headerCenterContent,
+      setHeaderCenterContent,
+      contentOverflow,
+      setContentOverflow,
+    }),
+    [showFooter, footerAction, footerLeftText, footerLeftAction, headerCenterContent, contentOverflow]
   );
   return (
     <LayoutOptionsContext.Provider value={value}>
