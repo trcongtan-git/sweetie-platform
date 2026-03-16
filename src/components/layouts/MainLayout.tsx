@@ -9,6 +9,7 @@ import {
   MenuUnfoldOutlined,
   FileTextOutlined,
   HeartOutlined,
+  ScissorOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import "@/styles/sidebar.css";
@@ -48,9 +49,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     }
   }, []);
 
-  // Auto-collapse sidebar when on euc-report page
+  // Auto-collapse sidebar when on euc-report or pdf-cut page
   useEffect(() => {
-    if (pathname.startsWith("/euc-report")) {
+    if (pathname.startsWith("/euc-report") || pathname.startsWith("/pdf-cut")) {
       setCollapsed(true);
       localStorage.setItem("my-baby-sidebar-collapsed", JSON.stringify(true));
     }
@@ -111,6 +112,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         icon: <FileTextOutlined />,
         label: "EUC Report",
       },
+      {
+        key: "/pdf-cut",
+        icon: <ScissorOutlined />,
+        label: "Cắt PDF",
+      },
     ];
     return items;
   };
@@ -124,6 +130,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const getBreadcrumb = () => {
     if (pathname.startsWith("/euc-report")) {
       return "EUC Report";
+    }
+    if (pathname.startsWith("/pdf-cut")) {
+      return "Cắt PDF";
     }
     return pathname.replace("/", "").split("/")[0] || "EUC Report";
   };

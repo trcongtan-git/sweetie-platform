@@ -1,0 +1,385 @@
+{
+    "date": "2026-02-28T17:00:00.000Z",
+    "exam": "Final",
+    "class": "S1044",
+    "teacher": "NTV",
+    "students": [
+        {
+            "id": "1772731145034-5",
+            "fullName": "TRẦN DANH HUYỀN DUYÊN",
+            "nickName": "ELSA",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "25",
+            "reading": "46",
+            "writing": "",
+            "speaking": "20",
+            "title": "",
+            "result": "Học viên (HV) chăm chỉ, tích cực tham gia các hoạt động trên lớp và tiếp thu kiến thức tốt. Tuy nhiên, HV đôi khi còn hay quên các từ đã học. Khuyến khích HV tích cực luyện nói thường xuyên để cải thiện kĩ năng nói cũng như nhớ từ lâu hơn. Khuyến khích Hv chủ động hoàn thành bài tập đầy đủ. ",
+            "remarks": {
+                "volunteering": "1",
+                "participation": "1",
+                "attentiveness": "2",
+                "carefulness": "2"
+            },
+            "academicAchievement": {
+                "vocabularyRetention": "3",
+                "pronunciation": "2",
+                "grammarUse": "3",
+                "listeningComprehension": "2",
+                "readingComprehension": "2",
+                "writingPerformance": "2",
+                "speakingConfidence": "2"
+            }
+        },
+        {
+            "id": "1772731145034-6",
+            "fullName": "TRẦN NGUYỄN THÚY NGÂN",
+            "nickName": "EMMA",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "25",
+            "reading": "50",
+            "writing": "",
+            "speaking": "20",
+            "title": "",
+            "result": "Học viên (HV) ngoan ngoãn, tiếp thu kiến thức tốt và có khả năng vận dụng linh hoạt vào bài học. Khuyến khích HV đi học đúng giờ và hoàn thành đầy đủ các bài tập được giao. Khuyến khích HV tiếp tục cố gắng. ",
+            "remarks": {
+                "volunteering": "1",
+                "participation": "1",
+                "attentiveness": "2",
+                "carefulness": "2"
+            },
+            "academicAchievement": {
+                "vocabularyRetention": "1",
+                "pronunciation": "1",
+                "grammarUse": "1",
+                "listeningComprehension": "1",
+                "readingComprehension": "1",
+                "writingPerformance": "1",
+                "speakingConfidence": "1"
+            }
+        },
+        {
+            "id": "1772731145034-7",
+            "fullName": "HỒ TÂM NHƯ",
+            "nickName": "NAMI",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "25",
+            "reading": "50",
+            "writing": "",
+            "speaking": "18",
+            "title": "",
+            "result": "Học viên (HV) ngoan, hoàn thành đầy đủ các bài tập được giao và tiếp thu tốt kiến thức. Tuy nhiên, đôi khi HV còn gặp khó khăn trong việc ghi nhớ từ vựng và diễn đạt. Khuyến khích HV luyện tập nói nhiều hơn để ghi nhớ từ vựng tốt hơn. Khuyến khích HV tiếp tục cố gắng và phát huy những điểm mạnh đã có.",
+            "remarks": {
+                "volunteering": "2",
+                "participation": "2",
+                "attentiveness": "2",
+                "carefulness": "2"
+            },
+            "academicAchievement": {
+                "vocabularyRetention": "3",
+                "pronunciation": "2",
+                "grammarUse": "3",
+                "readingComprehension": "2",
+                "listeningComprehension": "2",
+                "writingPerformance": "2",
+                "speakingConfidence": "3"
+            }
+        },
+        {
+            "id": "1772731145034-8",
+            "fullName": "HỒ NGỌC THANH HẰNG",
+            "nickName": "HANI",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "25",
+            "reading": "50",
+            "writing": "",
+            "speaking": "20",
+            "title": "",
+            "result": "Học viên (HV) ngoan, hoàn thành đầy đủ các bài tập và tiếp thu kiến thức tốt, vận dụng hiệu quả vào bài học. HV thể hiện sự cố gắng và tinh thần học tập tích cực. Khuyến khích HV tiếp tục cố gắng phát huy những ưu điểm. ",
+            "remarks": {
+                "volunteering": "1",
+                "participation": "1",
+                "attentiveness": "1",
+                "carefulness": "2"
+            },
+            "academicAchievement": {
+                "vocabularyRetention": "1",
+                "pronunciation": "2",
+                "grammarUse": "1",
+                "listeningComprehension": "2",
+                "readingComprehension": "1",
+                "writingPerformance": "1",
+                "speakingConfidence": "1"
+            }
+        },
+        {
+            "id": "1772731145034-9",
+            "fullName": "LÊ NGỌC THIÊN AN",
+            "nickName": "LUNA",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "0",
+            "reading": "0",
+            "writing": "",
+            "speaking": "0",
+            "title": "",
+            "result": "CHƯA THI"
+        },
+        {
+            "id": "1772731145034-10",
+            "fullName": "HOÀNG VĂN TUẤN",
+            "nickName": "TOM",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "25",
+            "reading": "46",
+            "writing": "",
+            "speaking": "21",
+            "title": "",
+            "result": "Học viên (HV) chăm chỉ, có thái độ học tập tích cực và tiếp thu kiến thức tốt. HV ghi nhớ từ vựng và nói tự tin, lưu loát. HV hoàn thành đầy đủ các bài tập được giao. Khuyến khích HV tiếp tục cố gắng và phát huy những điểm mạnh đã có để đạt được kết quả tốt hơn trong quá trình học tập.",
+            "remarks": {
+                "volunteering": "1",
+                "participation": "1",
+                "attentiveness": "2",
+                "carefulness": "2"
+            },
+            "academicAchievement": {
+                "vocabularyRetention": "1",
+                "pronunciation": "1",
+                "grammarUse": "1",
+                "listeningComprehension": "1",
+                "readingComprehension": "1",
+                "speakingConfidence": "1",
+                "writingPerformance": "1"
+            }
+        },
+        {
+            "id": "1772731145034-11",
+            "fullName": "MAI NGỌC TƯỜNG VY",
+            "nickName": "CHERRY",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "25",
+            "reading": "50",
+            "writing": "",
+            "speaking": "20",
+            "title": "",
+            "result": "Học viên (HV) chăm chỉ, tích cực tham gia các hoạt động trên lớp và luôn hoàn thành đầy đủ các bài tập được giao. HV tiếp thu kiến thức tốt, vận dụng hiệu quả vào thực tế. Khuyến khích HV nói tự tin và to hơn. Khuyến khích HV tiếp tục cố gắng và phát huy những điểm mạnh đã có.",
+            "remarks": {
+                "volunteering": "1",
+                "participation": "1",
+                "attentiveness": "1",
+                "carefulness": "2"
+            },
+            "academicAchievement": {
+                "vocabularyRetention": "1",
+                "pronunciation": "2",
+                "grammarUse": "1",
+                "listeningComprehension": "2",
+                "readingComprehension": "1",
+                "writingPerformance": "1",
+                "speakingConfidence": "2"
+            }
+        },
+        {
+            "id": "1772731145034-12",
+            "fullName": "TRẦN DIỄM HÂN",
+            "nickName": "HERA",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "25",
+            "reading": "37",
+            "writing": "",
+            "speaking": "19",
+            "title": "",
+            "result": "Học viên (HV) chăm chỉ, hoàn thành tốt các bài tập đã giao và tiếp thu kiến thức khá tốt. Tuy nhiên, HV đôi khi còn gặp khó khăn trong việc ghi nhớ từ mới.Khuyến khích HV chủ động luyện tập nói nhiều hơn, từ đó củng cố khả năng ghi nhớ từ vựng. Khuyến khích HV tiếp tục cố gắng và tích cực luyện tập để nâng cao thành tích học tập.",
+            "remarks": {
+                "volunteering": "1",
+                "participation": "1",
+                "attentiveness": "2",
+                "carefulness": "2"
+            },
+            "academicAchievement": {
+                "vocabularyRetention": "3",
+                "pronunciation": "2",
+                "grammarUse": "3",
+                "listeningComprehension": "2",
+                "readingComprehension": "2",
+                "writingPerformance": "2",
+                "speakingConfidence": "2"
+            }
+        },
+        {
+            "id": "1772731145034-13",
+            "fullName": "TRẦN DIỄM HẰNG",
+            "nickName": "HELEN",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "25",
+            "reading": "44",
+            "writing": "",
+            "speaking": "20",
+            "title": "",
+            "result": "Học viên (HV) chăm chỉ, tích cực tham gia các hoạt động trên lớp và tiếp thu kiến thức tốt, vận dụng khá hiệu quả. Tuy nhiên, HV đôi khi còn hay quên từ và hay mất tập trung . Khuyến khích HV tập trung hơn trong quá trình học tập và hoàn thành bài tập đầy đủ. Khuyến khích HV tiếp tục cố gắng và phát huy những điểm mạnh đã có để đạt được kết quả tốt hơn.",
+            "remarks": {
+                "volunteering": "1",
+                "participation": "1",
+                "attentiveness": "2",
+                "carefulness": "2"
+            },
+            "academicAchievement": {
+                "vocabularyRetention": "2",
+                "pronunciation": "2",
+                "grammarUse": "2",
+                "listeningComprehension": "2",
+                "readingComprehension": "2",
+                "writingPerformance": "2",
+                "speakingConfidence": "2"
+            }
+        },
+        {
+            "id": "1772731145034-15",
+            "fullName": "HOÀNG TRẦN DUY HƯNG",
+            "nickName": "HUGO",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "25",
+            "reading": "48",
+            "writing": "",
+            "speaking": "19",
+            "title": "",
+            "result": "Học viên (HV) chăm chỉ, luôn hoàn thành đầy đủ các bài tập được giao. HV tiếp thu kiến thức tốt và vận dụng hiệu quả trong quá trình học tập. Khuyến khích HV tiếp tục cố gắng và  tích cực luyện nói thường xuyên để tiến bộ hơn và ghi nhớ từ vựng lâu hơn. ",
+            "remarks": {
+                "volunteering": "1",
+                "participation": "1",
+                "attentiveness": "2",
+                "carefulness": "2"
+            },
+            "academicAchievement": {
+                "vocabularyRetention": "2",
+                "pronunciation": "2",
+                "grammarUse": "1",
+                "listeningComprehension": "2",
+                "readingComprehension": "1",
+                "writingPerformance": "1",
+                "speakingConfidence": "2"
+            }
+        },
+        {
+            "id": "1772731145034-16",
+            "fullName": "HỒ NGUYỄN BẢO VY",
+            "nickName": "ARESA",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "25",
+            "reading": "42",
+            "writing": "",
+            "speaking": "18",
+            "title": "",
+            "result": "Học viên (HV) chăm chỉ và hoàn thành đầy đủ các bài tập được giao. HV tiếp thu kiến thức tốt, tuy nhiên đôi khi vẫn còn gặp khó khăn trong việc ghi nhớ từ mới. Khuyến khích HV luyện nói nhiều hơn để nâng cao sự tự tin và củng cố kiến thức từ vựng. Khuyến khích HV tiếp tục cố gắng và duy trì thái độ học tập tích cực.",
+            "remarks": {
+                "volunteering": "1",
+                "participation": "1",
+                "attentiveness": "1",
+                "carefulness": "2"
+            },
+            "academicAchievement": {
+                "vocabularyRetention": "3",
+                "pronunciation": "2",
+                "grammarUse": "3",
+                "listeningComprehension": "3",
+                "readingComprehension": "2",
+                "writingPerformance": "2",
+                "speakingConfidence": "2"
+            }
+        },
+        {
+            "id": "1772731145034-17",
+            "fullName": "NGUYỄN LÊ THẢO NHI",
+            "nickName": "NICKY",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "25",
+            "reading": "50",
+            "writing": "",
+            "speaking": "20",
+            "title": "",
+            "result": "Học viên (HV) chăm chỉ, luôn hoàn thành đầy đủ các bài tập được giao và tiếp thu kiến thức tốt, vận dụng hiệu quả vào bài làm. HV cần tập trung hơn vào việc nghe giảng để nắm vững nội dung bài học. Khuyến khích HV tiếp tục cố gắng và phát huy những điểm mạnh đã có.",
+            "remarks": {
+                "volunteering": "1",
+                "participation": "1",
+                "attentiveness": "2",
+                "carefulness": "2"
+            },
+            "academicAchievement": {
+                "vocabularyRetention": "1",
+                "pronunciation": "2",
+                "grammarUse": "1",
+                "listeningComprehension": "2",
+                "readingComprehension": "1",
+                "writingPerformance": "1",
+                "speakingConfidence": "1"
+            }
+        },
+        {
+            "id": "1772731145034-18",
+            "fullName": "NGUYỄN MAI MỘC NHIÊN",
+            "nickName": "MINA",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "25",
+            "reading": "46",
+            "writing": "",
+            "speaking": "18",
+            "title": "",
+            "result": "Học viên (HV) ngoan và có thái độ học tập tích cực, luôn hoàn thành đầy đủ các bài tập được giao. HV tiếp thu kiến thức tốt, tuy nhiên đôi khi còn gặp khó khăn trong việc ghi nhớ từ vựng và luyện nói, cần chú trọng hơn đến việc luyện tập để nâng cao sự tự tin. Khuyến khích HV tiếp tục cố gắng và chủ động luyện nói nhiều hơn cũng như ôn tập từ vựng thường xuyên để đạt được kết quả tốt hơn.",
+            "remarks": {
+                "volunteering": "1",
+                "participation": "1",
+                "attentiveness": "1",
+                "carefulness": "2"
+            },
+            "academicAchievement": {
+                "vocabularyRetention": "2",
+                "pronunciation": "2",
+                "grammarUse": "2",
+                "listeningComprehension": "2",
+                "readingComprehension": "2",
+                "writingPerformance": "2",
+                "speakingConfidence": "2"
+            }
+        },
+        {
+            "id": "1772731145034-19",
+            "fullName": "NGUYỄN TRẦN MINH ĐĂNG",
+            "nickName": "DANIS",
+            "vocabulary": "",
+            "grammar": "",
+            "listening": "25",
+            "reading": "48",
+            "writing": "",
+            "speaking": "20",
+            "title": "",
+            "result": "Học viên (HV) chăm chỉ, hoàn thành đầy đủ các bài tập và tiếp thu kiến thức tốt, vận dụng hiệu quả vào bài làm. HV ghi nhớ từ nhanh và nói tốt. Khuyến khích HV tiếp tục cố gắng, duy trì sự chăm chỉ và tinh thần học hỏi để đạt được kết quả tốt hơn.",
+            "remarks": {
+                "volunteering": "1",
+                "participation": "1",
+                "attentiveness": "1",
+                "carefulness": "2"
+            },
+            "academicAchievement": {
+                "vocabularyRetention": "1",
+                "pronunciation": "2",
+                "grammarUse": "1",
+                "listeningComprehension": "2",
+                "readingComprehension": "1",
+                "writingPerformance": "1",
+                "speakingConfidence": "1"
+            }
+        }
+    ]
+}
