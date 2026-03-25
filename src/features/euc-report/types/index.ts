@@ -1,5 +1,11 @@
 import { Dayjs } from "dayjs";
 
+export interface ReportScoreColumn {
+  id: string;
+  fieldName: string;
+  maxPoint: number;
+}
+
 export interface StudentRemarks {
   volunteering?: string;
   participation?: string;
@@ -21,12 +27,8 @@ export interface Student {
   id: string;
   fullName: string;
   nickName: string;
-  vocabulary: string;
-  grammar: string;
-  listening: string;
-  reading: string;
-  writing: string;
-  speaking: string;
+  /** Score values keyed by ReportScoreColumn.id */
+  scores: Record<string, string>;
   title: string;
   result: string;
   remarks?: StudentRemarks;
@@ -38,6 +40,7 @@ export interface EucReportData {
   exam: string;
   class: string;
   teacher: string;
+  scoreColumns: ReportScoreColumn[];
   students: Student[];
 }
 

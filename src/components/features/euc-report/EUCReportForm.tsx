@@ -2,16 +2,19 @@
 
 import React, { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Button, Space } from "antd";
-import { DeleteOutlined, UploadOutlined, DownloadOutlined, ReloadOutlined, OpenAIOutlined } from "@ant-design/icons";
+import { Button, Space, Modal, message } from "antd";
+import { DeleteOutlined, UploadOutlined, DownloadOutlined, ReloadOutlined, OpenAIOutlined, SettingOutlined } from "@ant-design/icons";
 import { DatePicker, DataTable, Input, Select, Popup } from "@/components/ui";
 import { Input as AntdInput } from "antd";
 import type { TableAction } from "@/components/ui/DataTable";
 import { ContentLayout } from "@/components/layouts";
 import { useEucReport } from "@/features/euc-report";
-import type { Student } from "@/features/euc-report";
+import type { Student, ReportScoreColumn } from "@/features/euc-report";
+import {
+  getStudentScoreTotal,
+  emptyScoresForColumns,
+} from "@/features/euc-report/utils/scoreColumns";
 import { useLayoutOptions } from "@/providers/layoutOptions";
-import dayjs from "dayjs";
 import * as XLSX from "xlsx";
 import ExcelJS from "exceljs";
 
@@ -120,8 +123,20 @@ const ResultTextAreaCell: React.FC<{
 };
 
 export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
-  const { data, updateDate, updateExam, updateClass, updateTeacher, addStudent, updateStudent, deleteStudent, importStudents, clearStudents, saveCurrentData } =
-    useEucReport();
+  const {
+    data,
+    updateDate,
+    updateExam,
+    updateClass,
+    updateTeacher,
+    updateScoreColumns,
+    addStudent,
+    updateStudent,
+    deleteStudent,
+    importStudents,
+    clearStudents,
+    saveCurrentData,
+  } = useEucReport();
   const { setShowFooter, setFooterAction, setFooterLeftText } = useLayoutOptions();
   const [editingCell, setEditingCell] = useState<{
     rowId: string;
@@ -136,33 +151,22 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
   const [criteria, setCriteria] = useState<string>("");
   const [generatingStudentId, setGeneratingStudentId] = useState<string | null>(null);
   const [generating, setGenerating] = useState<boolean>(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [draftScoreColumns, setDraftScoreColumns] = useState<ReportScoreColumn[]>([]);
 
   const canProceedToNextStep =
     data.date && data.exam && data.class && data.teacher && data.students.length > 0;
 
-  // Helper function to get value from student by columnId
   const getStudentValue = useCallback((student: Student, columnId: string): string => {
     switch (columnId) {
       case "fullName":
         return student.fullName || "";
       case "nickName":
         return student.nickName || "";
-      case "vocabulary":
-        return student.vocabulary || "";
-      case "grammar":
-        return student.grammar || "";
-      case "listening":
-        return student.listening || "";
-      case "reading":
-        return student.reading || "";
-      case "writing":
-        return student.writing || "";
-      case "speaking":
-        return student.speaking || "";
       case "result":
         return student.result || "";
       default:
-        return "";
+        return student.scores[columnId] ?? "";
     }
   }, []);
 
@@ -198,10 +202,65 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
     };
   }, [setShowFooter, setFooterAction, setFooterLeftText, onNextStep, canProceedToNextStep]);
 
-  const columns = useMemo<ColumnDef<Student>[]>(
-    () => {
-      console.log("[DEBUG] Columns recreating, editingValues:", editingValues);
-      return [
+  const columns = useMemo<ColumnDef<Student>[]>(() => {
+    const scoreColDefs: ColumnDef<Student>[] = data.scoreColumns.map((col) => ({
+      id: col.id,
+      header: `${col.fieldName} (${col.maxPoint})`,
+      size: 88,
+      cell: ({ row }) => {
+        const isEditing =
+          editingCell?.rowId === row.original.id && editingCell?.columnId === col.id;
+        const cellKey = `${row.original.id}-${col.id}`;
+        const max = col.maxPoint;
+        return isEditing ? (
+          <EditableInputCell
+            key={cellKey}
+            initialValue={row.original.scores[col.id] ?? ""}
+            type="number"
+            min={0}
+            max={max}
+            step="0.1"
+            validate={(value) => {
+              if (value === "" || value === ".") return true;
+              if (!/^\d*\.?\d*$/.test(value)) return false;
+              const num = parseFloat(value);
+              if (isNaN(num)) return value === "" || value === ".";
+              return num >= 0 && num <= max;
+            }}
+            onValueChange={(value) => setEditingValue(row.original.id, col.id, value)}
+            onBlur={(value) => {
+              updateStudent(row.original.id, {
+                scores: { ...row.original.scores, [col.id]: value },
+              });
+              saveCurrentData();
+              setEditingCell(null);
+              setEditingValues((prev) => {
+                const newValues = { ...prev };
+                delete newValues[cellKey];
+                return newValues;
+              });
+            }}
+          />
+        ) : (
+          <div
+            onClick={() => {
+              const value = getStudentValue(row.original, col.id);
+              setEditingValue(row.original.id, col.id, value);
+              setEditingCell({ rowId: row.original.id, columnId: col.id });
+            }}
+            style={{ cursor: "text", minHeight: "24px", padding: "4px 0" }}
+          >
+            {(row.original.scores[col.id] || "").length > 0 ? (
+              row.original.scores[col.id]
+            ) : (
+              <span style={{ color: "#ff4d4f" }}>Click to edit</span>
+            )}
+          </div>
+        );
+      },
+    }));
+
+    return [
       {
         id: "_stt",
         header: "No",
@@ -230,7 +289,7 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
                 updateStudent(row.original.id, { fullName: value });
                 saveCurrentData();
                 setEditingCell(null);
-                setEditingValues(prev => {
+                setEditingValues((prev) => {
                   const newValues = { ...prev };
                   delete newValues[cellKey];
                   return newValues;
@@ -240,9 +299,7 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
           ) : (
             <div
               onClick={() => {
-                console.log("[DEBUG] Clicked fullName cell for student:", row.original.id);
                 const value = getStudentValue(row.original, "fullName");
-                console.log("[DEBUG] Setting editingValue to:", value);
                 setEditingValue(row.original.id, "fullName", value);
                 setEditingCell({ rowId: row.original.id, columnId: "fullName" });
               }}
@@ -273,7 +330,7 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
                 updateStudent(row.original.id, { nickName: value });
                 saveCurrentData();
                 setEditingCell(null);
-                setEditingValues(prev => {
+                setEditingValues((prev) => {
                   const newValues = { ...prev };
                   delete newValues[cellKey];
                   return newValues;
@@ -284,7 +341,6 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
             <div
               onClick={() => {
                 const value = getStudentValue(row.original, "nickName");
-                console.log("[DEBUG] Clicked nickName cell, setting value:", value);
                 setEditingValue(row.original.id, "nickName", value);
                 setEditingCell({ rowId: row.original.id, columnId: "nickName" });
               }}
@@ -297,178 +353,14 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
           );
         },
       },
+      ...scoreColDefs,
       {
-        id: "listening",
-        header: "Listening (25)",
-        size: 70,
-        cell: ({ row }) => {
-          const isEditing =
-            editingCell?.rowId === row.original.id &&
-            editingCell?.columnId === "listening";
-          const cellKey = `${row.original.id}-listening`;
-          return isEditing ? (
-            <EditableInputCell
-              key={cellKey}
-              initialValue={row.original.listening}
-              type="number"
-              min={0}
-              max={25}
-              step="0.1"
-              validate={(value) => {
-                if (value === "" || value === ".") return true;
-                if (!/^\d*\.?\d*$/.test(value)) return false;
-                const num = parseFloat(value);
-                if (isNaN(num)) return value === "" || value === ".";
-                return num >= 0 && num <= 25;
-              }}
-              onValueChange={(value) => setEditingValue(row.original.id, "listening", value)}
-              onBlur={(value) => {
-                updateStudent(row.original.id, { listening: value });
-                saveCurrentData();
-                setEditingCell(null);
-                setEditingValues(prev => {
-                  const newValues = { ...prev };
-                  delete newValues[cellKey];
-                  return newValues;
-                });
-              }}
-            />
-          ) : (
-            <div
-              onClick={() => {
-                const value = getStudentValue(row.original, "listening");
-                console.log("[DEBUG] Clicked listening cell, setting value:", value);
-                setEditingValue(row.original.id, "listening", value);
-                setEditingCell({ rowId: row.original.id, columnId: "listening" });
-              }}
-              style={{ cursor: "text", minHeight: "24px", padding: "4px 0" }}
-            >
-              {row.original.listening || (
-                <span style={{ color: "#ff4d4f" }}>Click to edit</span>
-              )}
-            </div>
-          );
-        },
-      },
-      {
-        id: "reading",
-        header: "Reading & Writing (50)",
-        size: 70,
-        cell: ({ row }) => {
-          const isEditing =
-            editingCell?.rowId === row.original.id &&
-            editingCell?.columnId === "reading";
-          const cellKey = `${row.original.id}-reading`;
-          return isEditing ? (
-            <EditableInputCell
-              key={cellKey}
-              initialValue={row.original.reading}
-              type="number"
-              min={0}
-              max={50}
-              step="0.1"
-              validate={(value) => {
-                if (value === "" || value === ".") return true;
-                if (!/^\d*\.?\d*$/.test(value)) return false;
-                const num = parseFloat(value);
-                if (isNaN(num)) return value === "" || value === ".";
-                return num >= 0 && num <= 50;
-              }}
-              onValueChange={(value) => setEditingValue(row.original.id, "reading", value)}
-              onBlur={(value) => {
-                updateStudent(row.original.id, { reading: value });
-                saveCurrentData();
-                setEditingCell(null);
-                setEditingValues(prev => {
-                  const newValues = { ...prev };
-                  delete newValues[cellKey];
-                  return newValues;
-                });
-              }}
-            />
-          ) : (
-            <div
-              onClick={() => {
-                const value = getStudentValue(row.original, "reading");
-                console.log("[DEBUG] Clicked reading cell, setting value:", value);
-                setEditingValue(row.original.id, "reading", value);
-                setEditingCell({
-                  rowId: row.original.id,
-                  columnId: "reading",
-                });
-              }}
-              style={{ cursor: "text", minHeight: "24px", padding: "4px 0" }}
-            >
-              {row.original.reading || (
-                <span style={{ color: "#ff4d4f" }}>Click to edit</span>
-              )}
-            </div>
-          );
-        },
-      },
-      {
-        id: "speaking",
-        header: "Speaking (25)",
-        size: 70,
-        cell: ({ row }) => {
-          const isEditing =
-            editingCell?.rowId === row.original.id &&
-            editingCell?.columnId === "speaking";
-          const cellKey = `${row.original.id}-speaking`;
-          return isEditing ? (
-            <EditableInputCell
-              key={cellKey}
-              initialValue={row.original.speaking}
-              type="number"
-              min={0}
-              max={25}
-              step="0.1"
-              validate={(value) => {
-                if (value === "" || value === ".") return true;
-                if (!/^\d*\.?\d*$/.test(value)) return false;
-                const num = parseFloat(value);
-                if (isNaN(num)) return value === "" || value === ".";
-                return num >= 0 && num <= 25;
-              }}
-              onValueChange={(value) => setEditingValue(row.original.id, "speaking", value)}
-              onBlur={(value) => {
-                updateStudent(row.original.id, { speaking: value });
-                saveCurrentData();
-                setEditingCell(null);
-                setEditingValues(prev => {
-                  const newValues = { ...prev };
-                  delete newValues[cellKey];
-                  return newValues;
-                });
-              }}
-            />
-          ) : (
-            <div
-              onClick={() => {
-                const value = getStudentValue(row.original, "speaking");
-                console.log("[DEBUG] Clicked speaking cell, setting value:", value);
-                setEditingValue(row.original.id, "speaking", value);
-                setEditingCell({ rowId: row.original.id, columnId: "speaking" });
-              }}
-              style={{ cursor: "text", minHeight: "24px", padding: "4px 0" }}
-            >
-              {row.original.speaking || (
-                <span style={{ color: "#ff4d4f" }}>Click to edit</span>
-              )}
-            </div>
-          );
-        },
-      },
-      {
-        id: "title",
+        id: "_total",
         header: "Total",
-        size: 40,
+        size: 48,
         meta: { align: "center" },
         cell: ({ row }) => {
-          const listening = parseFloat(row.original.listening) || 0;
-          const reading = parseFloat(row.original.reading) || 0;
-          const speaking = parseFloat(row.original.speaking) || 0;
-          const total = listening + reading + speaking;
+          const total = getStudentScoreTotal(row.original, data.scoreColumns);
           return (
             <div style={{ minHeight: "24px", padding: "4px 0" }}>
               {total % 1 === 0 ? total : total.toFixed(1)}
@@ -485,7 +377,6 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
             editingCell?.rowId === row.original.id &&
             editingCell?.columnId === "result";
           const cellKey = `${row.original.id}-result`;
-          // Use a separate component to avoid columns recreation
           return isEditing ? (
             <ResultTextAreaCell
               key={cellKey}
@@ -497,7 +388,7 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
                 updateStudent(row.original.id, { result: value });
                 saveCurrentData();
                 setEditingCell(null);
-                setEditingValues(prev => {
+                setEditingValues((prev) => {
                   const newValues = { ...prev };
                   delete newValues[cellKey];
                   return newValues;
@@ -508,7 +399,6 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
             <div
               onClick={() => {
                 const value = getStudentValue(row.original, "result");
-                console.log("[DEBUG] Clicked result cell, setting value:", value);
                 setEditingValue(row.original.id, "result", value);
                 setEditingCell({ rowId: row.original.id, columnId: "result" });
               }}
@@ -529,8 +419,66 @@ export const EUCReportForm: React.FC<EUCReportFormProps> = ({ onNextStep }) => {
         },
       },
     ];
-    },
-    [editingCell, data, updateStudent, saveCurrentData, setEditingValue, getStudentValue]
+  }, [
+    editingCell,
+    data.students,
+    data.scoreColumns,
+    updateStudent,
+    saveCurrentData,
+    setEditingValue,
+    getStudentValue,
+  ]);
+
+  const openScoreSettings = () => {
+    setDraftScoreColumns(data.scoreColumns.map((c) => ({ ...c })));
+    setSettingsOpen(true);
+  };
+
+  const handleAddDraftColumn = () => {
+    setDraftScoreColumns((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), fieldName: "", maxPoint: 10 },
+    ]);
+  };
+
+  const handleRemoveDraftColumn = (id: string) => {
+    setDraftScoreColumns((prev) => prev.filter((c) => c.id !== id));
+  };
+
+  const handleSaveScoreSettings = () => {
+    for (const c of draftScoreColumns) {
+      if (!c.fieldName.trim()) {
+        message.error("Mỗi cột cần có tên (Field name).");
+        return;
+      }
+      const mp = Number(c.maxPoint);
+      if (!Number.isFinite(mp) || mp < 0) {
+        message.error("Max point phải là số ≥ 0.");
+        return;
+      }
+    }
+    if (draftScoreColumns.length === 0) {
+      message.error("Cần ít nhất một cột điểm.");
+      return;
+    }
+    updateScoreColumns(
+      draftScoreColumns.map((c) => ({
+        id: c.id,
+        fieldName: c.fieldName.trim(),
+        maxPoint: Math.max(0, Number(c.maxPoint)),
+      }))
+    );
+    setSettingsOpen(false);
+    message.success("Đã lưu cấu hình cột.");
+  };
+
+  const draftMaxPointsTotal = useMemo(
+    () =>
+      draftScoreColumns.reduce(
+        (sum, c) => sum + Math.max(0, Number(c.maxPoint) || 0),
+        0
+      ),
+    [draftScoreColumns]
   );
 
   const checkApiKey = () => {
@@ -754,29 +702,29 @@ Không thêm nhận xét ngoài yêu cầu.`;
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
-        const data = event.target?.result;
-        const workbook = XLSX.read(data, { type: "binary" });
+        const bin = event.target?.result;
+        const workbook = XLSX.read(bin, { type: "binary" });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
 
         const students: Student[] = [];
+        const cols = data.scoreColumns;
         for (let i = 5; i < jsonData.length; i++) {
-          const row = jsonData[i] as any[];
+          const row = jsonData[i] as unknown[];
           const fullName = row[1]?.toString().trim() || "";
           const nickName = row[2]?.toString().trim() || "";
 
           if (fullName || nickName) {
+            const scores = emptyScoresForColumns(cols);
+            cols.forEach((col, idx) => {
+              scores[col.id] = row[3 + idx]?.toString().trim() || "";
+            });
             students.push({
               id: `${Date.now()}-${i}`,
               fullName,
               nickName,
-              vocabulary: "",
-              grammar: "",
-              listening: "",
-              reading: "",
-              writing: "",
-              speaking: "",
+              scores,
               title: "",
               result: "",
             });
@@ -806,14 +754,15 @@ Không thêm nhận xét ngoài yêu cầu.`;
     const className = data.class.toUpperCase();
     const dateText = data.date ? data.date.format("DD/MM/YYYY") : "";
 
-    worksheet.getColumn("A").width = 8;
-    worksheet.getColumn("B").width = 45;
-    worksheet.getColumn("C").width = 18;
-    worksheet.getColumn("D").width = 18;
-    worksheet.getColumn("E").width = 18;
-    worksheet.getColumn("F").width = 18;
-    worksheet.getColumn("G").width = 18;
-    worksheet.getColumn("H").width = 70;
+    const nScore = data.scoreColumns.length;
+    worksheet.getColumn(1).width = 8;
+    worksheet.getColumn(2).width = 45;
+    worksheet.getColumn(3).width = 18;
+    for (let c = 0; c < nScore; c++) {
+      worksheet.getColumn(4 + c).width = 16;
+    }
+    worksheet.getColumn(4 + nScore).width = 12;
+    worksheet.getColumn(5 + nScore).width = 70;
 
     const defaultFont = { name: "Times New Roman" };
     worksheet.eachRow((row) => {
@@ -866,9 +815,9 @@ Không thêm nhận xét ngoài yêu cầu.`;
       "NO",
       "FULL NAME",
       "NICK NAME",
-      "LISTENING (25)",
-      "READING & WRITING (50)",
-      "SPEAKING (25)",
+      ...data.scoreColumns.map(
+        (c) => `${c.fieldName.toUpperCase()} (${c.maxPoint})`
+      ),
       "TOTAL",
       "RESULT",
     ];
@@ -895,18 +844,13 @@ Không thêm nhận xét ngoài yêu cầu.`;
 
     data.students.forEach((student, index) => {
       const row = headerRow + 1 + index;
-      const listening = parseFloat(student.listening) || 0;
-      const reading = parseFloat(student.reading) || 0;
-      const speaking = parseFloat(student.speaking) || 0;
-      const total = listening + reading + speaking;
+      const total = getStudentScoreTotal(student, data.scoreColumns);
 
       const rowData = [
         index + 1,
         student.fullName,
         student.nickName,
-        student.listening || "",
-        student.reading || "",
-        student.speaking || "",
+        ...data.scoreColumns.map((c) => student.scores[c.id] || ""),
         total,
         student.result || "",
       ];
@@ -926,7 +870,8 @@ Không thêm nhận xét ngoài yêu cầu.`;
           bottom: { style: "thin" },
           right: { style: "thin" },
         };
-        if (colIndex === 0 || (colIndex >= 3 && colIndex <= 6)) {
+        const lastNumericCol = 3 + nScore;
+        if (colIndex === 0 || (colIndex >= 3 && colIndex <= lastNumericCol)) {
           cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
         } else {
           cell.alignment = { vertical: "middle", wrapText: true };
@@ -1002,6 +947,9 @@ Không thêm nhận xét ngoài yêu cầu.`;
             </div>
           </Space>
           <Space>
+            <Button type="default" icon={<SettingOutlined />} onClick={openScoreSettings}>
+              Settings
+            </Button>
             <Button type="default" icon={<DownloadOutlined />} onClick={handleExport}>
               Export
             </Button>
@@ -1039,6 +987,97 @@ Không thêm nhận xét ngoài yêu cầu.`;
           />
         </div>
       </Space>
+
+      <Modal
+        title="Score columns"
+        open={settingsOpen}
+        onCancel={() => setSettingsOpen(false)}
+        styles={{
+          body: {
+            paddingTop: 16,
+            paddingBottom: 16,
+          },
+        }}
+        footer={[
+          <Button key="close" onClick={() => setSettingsOpen(false)}>
+            Close
+          </Button>,
+          <Button key="save" type="primary" onClick={handleSaveScoreSettings}>
+            Save
+          </Button>,
+        ]}
+        width={560}
+        destroyOnClose
+      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 100px 40px",
+            gap: 8,
+            alignItems: "center",
+            marginBottom: 8,
+            fontWeight: 600,
+            fontSize: 13,
+            color: "#374151",
+          }}
+        >
+          <span>Field name</span>
+          <span>Max point ({draftMaxPointsTotal})</span>
+          <span />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 360, overflowY: "auto" }}>
+          {draftScoreColumns.map((col) => (
+            <div
+              key={col.id}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 100px 40px",
+                gap: 8,
+                alignItems: "center",
+              }}
+            >
+              <Input
+                value={col.fieldName}
+                placeholder="Column name"
+                onChange={(e) =>
+                  setDraftScoreColumns((prev) =>
+                    prev.map((c) =>
+                      c.id === col.id ? { ...c, fieldName: e.target.value } : c
+                    )
+                  )
+                }
+              />
+              <Input
+                type="number"
+                min={0}
+                step={1}
+                value={col.maxPoint}
+                onChange={(e) =>
+                  setDraftScoreColumns((prev) =>
+                    prev.map((c) =>
+                      c.id === col.id
+                        ? { ...c, maxPoint: Number(e.target.value) }
+                        : c
+                    )
+                  )
+                }
+              />
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => handleRemoveDraftColumn(col.id)}
+                aria-label="Delete column"
+              />
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <Button type="dashed" onClick={handleAddDraftColumn} block>
+            Add column
+          </Button>
+        </div>
+      </Modal>
 
       {/* API Key Modal */}
       <Popup

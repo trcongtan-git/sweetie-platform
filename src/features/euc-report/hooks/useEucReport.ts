@@ -3,28 +3,38 @@
 import { useState, useEffect, useCallback } from "react";
 import { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import type { EucReportData, Student } from "../types";
+import type { EucReportData, ReportScoreColumn, Student } from "../types";
+import {
+  DEFAULT_SCORE_COLUMNS,
+  emptyScoresForColumns,
+  normalizeEucReportPayload,
+  rekeyStudentScores,
+} from "../utils/scoreColumns";
 
 const STORAGE_KEY = "euc-report-data";
 
+const initialData = (): EucReportData => ({
+  date: null,
+  exam: "",
+  class: "",
+  teacher: "NTV",
+  scoreColumns: DEFAULT_SCORE_COLUMNS,
+  students: [],
+});
+
 export function useEucReport() {
-  const [data, setData] = useState<EucReportData>({
-    date: null,
-    exam: "",
-    class: "",
-    teacher: "NTV",
-    students: [],
-  });
+  const [data, setData] = useState<EucReportData>(initialData);
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
-        const parsed = JSON.parse(saved);
+        const parsed = JSON.parse(saved) as Record<string, unknown>;
+        const normalized = normalizeEucReportPayload(parsed);
         setData({
-          ...parsed,
-          date: parsed.date ? dayjs(parsed.date) : null,
-          teacher: parsed.teacher || "NTV",
+          ...normalized,
+          date: normalized.date ? dayjs(normalized.date) : null,
+          teacher: normalized.teacher || "NTV",
         });
       } catch (error) {
         console.error("Failed to load saved data:", error);
@@ -41,28 +51,34 @@ export function useEucReport() {
   }, []);
 
   const updateDate = useCallback((date: Dayjs | null) => {
-    setData((prevData) => {
-      return { ...prevData, date };
-    });
+    setData((prevData) => ({ ...prevData, date }));
   }, []);
 
   const updateExam = useCallback((exam: string) => {
-    setData((prevData) => {
-      return { ...prevData, exam };
-    });
+    setData((prevData) => ({ ...prevData, exam }));
   }, []);
 
   const updateClass = useCallback((classValue: string) => {
-    setData((prevData) => {
-      return { ...prevData, class: classValue };
-    });
+    setData((prevData) => ({ ...prevData, class: classValue }));
   }, []);
 
   const updateTeacher = useCallback((teacher: string) => {
-    setData((prevData) => {
-      return { ...prevData, teacher };
-    });
+    setData((prevData) => ({ ...prevData, teacher }));
   }, []);
+
+  const updateScoreColumns = useCallback(
+    (scoreColumns: ReportScoreColumn[]) => {
+      setData((prev) => {
+        const students = prev.students.map((s) =>
+          rekeyStudentScores(s, scoreColumns)
+        );
+        const newData = { ...prev, scoreColumns, students };
+        saveDataToStorage(newData);
+        return newData;
+      });
+    },
+    [saveDataToStorage]
+  );
 
   const saveCurrentData = useCallback(() => {
     setData((currentData) => {
@@ -77,17 +93,14 @@ export function useEucReport() {
         id: Date.now().toString(),
         fullName: "",
         nickName: "",
-        vocabulary: "",
-        grammar: "",
-        listening: "",
-        reading: "",
-        writing: "",
-        speaking: "",
+        scores: emptyScoresForColumns(prevData.scoreColumns),
         title: "",
         result: "",
       };
-      const newData = { ...prevData, students: [...prevData.students, newStudent] };
-      // Save immediately for add/delete operations
+      const newData = {
+        ...prevData,
+        students: [...prevData.students, newStudent],
+      };
       saveDataToStorage(newData);
       return newData;
     });
@@ -106,7 +119,6 @@ export function useEucReport() {
     setData((prevData) => {
       const updatedStudents = prevData.students.filter((student) => student.id !== id);
       const newData = { ...prevData, students: updatedStudents };
-      // Save immediately for add/delete operations
       saveDataToStorage(newData);
       return newData;
     });
@@ -114,8 +126,8 @@ export function useEucReport() {
 
   const importStudents = useCallback((students: Student[]) => {
     setData((prevData) => {
-      const newData = { ...prevData, students: [...prevData.students, ...students] };
-      // Save immediately for import operations
+      const filled = students.map((s) => rekeyStudentScores(s, prevData.scoreColumns));
+      const newData = { ...prevData, students: [...prevData.students, ...filled] };
       saveDataToStorage(newData);
       return newData;
     });
@@ -124,7 +136,6 @@ export function useEucReport() {
   const clearStudents = useCallback(() => {
     setData((prevData) => {
       const newData = { ...prevData, students: [] };
-      // Save immediately for clear operations
       saveDataToStorage(newData);
       return newData;
     });
@@ -136,6 +147,7 @@ export function useEucReport() {
     updateExam,
     updateClass,
     updateTeacher,
+    updateScoreColumns,
     addStudent,
     updateStudent,
     deleteStudent,

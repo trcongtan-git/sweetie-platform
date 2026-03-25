@@ -203,8 +203,11 @@ const Popup: React.FC<PopupProps> = ({
       }}
       styles={{
         body: {
-          padding: 0,
           margin: 0,
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingTop: 16,
+          paddingBottom: 16,
           ...bodyStyle,
         },
       }}

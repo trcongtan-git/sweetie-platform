@@ -6,6 +6,11 @@ import { LeftOutlined, RightOutlined, DownloadOutlined } from "@ant-design/icons
 import { ContentLayout } from "@/components/layouts";
 import { useEucReport } from "@/features/euc-report";
 import type { Student } from "@/features/euc-report";
+import {
+  getStudentScoreTotal,
+  buildDocxDynamicScores,
+} from "@/features/euc-report/utils/scoreColumns";
+import { patchDocumentXmlForGradeColumns } from "@/features/euc-report/utils/patchDocxGradeTable";
 import { useLayoutOptions } from "@/providers/layoutOptions";
 import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
@@ -14,6 +19,12 @@ import { saveAs } from "file-saver";
 export interface EUCReportStep2Props {
   onBackStep?: () => void;
 }
+
+const patchZipGradeTableXml = (zip: PizZip, columnCount: number) => {
+  const entry = zip.files["word/document.xml"];
+  if (!entry || columnCount < 1) return;
+  zip.file("word/document.xml", patchDocumentXmlForGradeColumns(entry.asText(), columnCount));
+};
 
 export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) => {
   const { data, updateStudent, saveCurrentData } = useEucReport();
@@ -40,16 +51,8 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
     }
   }, [currentIndex, cardsPerPage, totalStudents]);
 
-  const getStudentScore = (student: Student) => {
-    const listening = parseFloat(student.listening) || 0;
-    const readingWriting = parseFloat(student.reading) || 0;
-    const speaking = parseFloat(student.speaking) || 0;
-    const total = listening + readingWriting + speaking;
-    return { listening, readingWriting, speaking, total };
-  };
-
   const StudentCard: React.FC<{ student: Student }> = ({ student }) => {
-    const scores = getStudentScore(student);
+    const totalScore = getStudentScoreTotal(student, data.scoreColumns);
     const dateText = data.date ? data.date.format("DD/MM/YYYY") : "";
     const remarks = student.remarks || {};
     const academicAchievement = student.academicAchievement || {};
@@ -123,39 +126,20 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
           >
             <thead>
               <tr style={{ backgroundColor: "#f9fafb" }}>
-                <th
-                  style={{
-                    border: "1px solid #e5e7eb",
-                    padding: "4px 8px",
-                    textAlign: "center",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                  }}
-                >
-                  LISTENING (25)
-                </th>
-                <th
-                  style={{
-                    border: "1px solid #e5e7eb",
-                    padding: "4px 8px",
-                    textAlign: "center",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                  }}
-                >
-                  READING &amp; WRITING (50)
-                </th>
-                <th
-                  style={{
-                    border: "1px solid #e5e7eb",
-                    padding: "4px 8px",
-                    textAlign: "center",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                  }}
-                >
-                  SPEAKING (25)
-                </th>
+                {data.scoreColumns.map((col) => (
+                  <th
+                    key={col.id}
+                    style={{
+                      border: "1px solid #e5e7eb",
+                      padding: "4px 8px",
+                      textAlign: "center",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {col.fieldName.toUpperCase()} ({col.maxPoint})
+                  </th>
+                ))}
                 <th
                   style={{
                     border: "1px solid #e5e7eb",
@@ -171,36 +155,19 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
             </thead>
             <tbody>
               <tr>
-                <td
-                  style={{
-                    border: "1px solid #e5e7eb",
-                    padding: "4px 8px",
-                    textAlign: "center",
-                    fontSize: "14px",
-                  }}
-                >
-                  {student.listening || "-"}
-                </td>
-                <td
-                  style={{
-                    border: "1px solid #e5e7eb",
-                    padding: "4px 8px",
-                    textAlign: "center",
-                    fontSize: "14px",
-                  }}
-                >
-                  {student.reading || "-"}
-                </td>
-                <td
-                  style={{
-                    border: "1px solid #e5e7eb",
-                    padding: "4px 8px",
-                    textAlign: "center",
-                    fontSize: "14px",
-                  }}
-                >
-                  {student.speaking || "-"}
-                </td>
+                {data.scoreColumns.map((col) => (
+                  <td
+                    key={col.id}
+                    style={{
+                      border: "1px solid #e5e7eb",
+                      padding: "4px 8px",
+                      textAlign: "center",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {student.scores[col.id] || "-"}
+                  </td>
+                ))}
                 <td
                   style={{
                     border: "1px solid #e5e7eb",
@@ -210,7 +177,7 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
                     fontWeight: 600,
                   }}
                 >
-                  {scores.total % 1 === 0 ? scores.total : scores.total.toFixed(1)}
+                  {totalScore % 1 === 0 ? totalScore : totalScore.toFixed(1)}
                 </td>
               </tr>
             </tbody>
@@ -1225,10 +1192,6 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
         };
 
         const getStudentData = (student: Student) => {
-          const listening = parseFloat(student.listening) || 0;
-          const readingWriting = parseFloat(student.reading) || 0;
-          const speaking = parseFloat(student.speaking) || 0;
-          const total = listening + readingWriting + speaking;
           const remarks = student.remarks || {};
           const academicAchievement = student.academicAchievement || {};
 
@@ -1239,10 +1202,7 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
             date: dateText,
             exam: examUpper,
             teacher: data.teacher,
-            listening: student.listening || "",
-            readingWriting: student.reading || "",
-            speaking: student.speaking || "",
-            totalScore: total,
+            ...buildDocxDynamicScores(student, data),
             result: student.result || "",
             volunteering1: getCheckboxValue(remarks.volunteering, 1),
             volunteering2: getCheckboxValue(remarks.volunteering, 2),
@@ -1294,6 +1254,7 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
         const response = await fetch("/template-report.docx");
         const arrayBuffer = await response.arrayBuffer();
         const baseZip = new PizZip(arrayBuffer);
+        patchZipGradeTableXml(baseZip, data.scoreColumns.length);
 
         const doc = new Docxtemplater(baseZip, {
           paragraphLoop: true,
@@ -1312,6 +1273,7 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
         if (data.students.length > 1) {
           for (let i = 1; i < data.students.length; i++) {
             const studentZip = new PizZip(arrayBuffer);
+            patchZipGradeTableXml(studentZip, data.scoreColumns.length);
             const studentDoc = new Docxtemplater(studentZip, {
               paragraphLoop: true,
               linebreaks: true,
@@ -1419,7 +1381,8 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
       const response = await fetch("/template-report.docx");
       const arrayBuffer = await response.arrayBuffer();
       const zip = new PizZip(arrayBuffer);
-      
+      patchZipGradeTableXml(zip, data.scoreColumns.length);
+
       const doc = new Docxtemplater(zip, {
         paragraphLoop: true,
         linebreaks: true,
@@ -1427,10 +1390,6 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
       });
 
       const dateText = data.date ? data.date.format("DD/MM/YYYY") : "";
-      const listening = parseFloat(student.listening) || 0;
-      const readingWriting = parseFloat(student.reading) || 0;
-      const speaking = parseFloat(student.speaking) || 0;
-      const total = listening + readingWriting + speaking;
 
       const remarks = student.remarks || {};
       const academicAchievement = student.academicAchievement || {};
@@ -1447,10 +1406,7 @@ export const EUCReportStep2: React.FC<EUCReportStep2Props> = ({ onBackStep }) =>
         date: dateText,
         exam: data.exam ? data.exam.toUpperCase() : "",
         teacher: data.teacher,
-        listening: student.listening || "",
-        readingWriting: student.reading || "",
-        speaking: student.speaking || "",
-        totalScore: total,
+        ...buildDocxDynamicScores(student, data),
         result: student.result || "",
         volunteering1: getCheckboxValue(remarks.volunteering, 1),
         volunteering2: getCheckboxValue(remarks.volunteering, 2),
