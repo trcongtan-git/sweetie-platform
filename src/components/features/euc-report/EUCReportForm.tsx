@@ -636,7 +636,7 @@ Không thêm nhận xét ngoài yêu cầu.`;
           "Authorization": authHeader,
         },
         body: JSON.stringify({
-          model: "google/gemma-3n-e2b-it:free",
+          model: "minimax/minimax-m2.5:free",
           messages: [
             {
               role: "user",
